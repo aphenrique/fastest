@@ -23,13 +23,50 @@ void main(List<String> args) async {
   stdout.write(result.stdout);
   stderr.write(result.stderr);
 
+  // Analisa os resultados dos testes
+  final failedTests = _findFailedTests(result.stdout.toString());
+  if (failedTests.isNotEmpty) {
+    print('\nArquivos com falha:');
+    for (final test in failedTests) {
+      print('- $test');
+    }
+  }
+
   exit(result.exitCode);
+}
+
+Set<String> _findFailedTests(String output) {
+  final failedTests = <String>{};
+  final lines = output.split('\n');
+
+  for (final line in lines) {
+    if (line.contains('_test.dart') && line.contains('[E]')) {
+      final fileName = line.trim().split(' ').first;
+      failedTests.add(fileName);
+    }
+  }
+
+  return failedTests;
 }
 
 class AliasGenerator {
   int _currentIndex = 0;
   final List<String> _alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
-  final Set<String> _reservedWords = {'as'};
+  final Set<String> _reservedWords = {
+    'as',
+    'do',
+    'for',
+    'get',
+    'if',
+    'in',
+    'is',
+    'new',
+    'of',
+    'on',
+    'set',
+    'try',
+    'var'
+  };
 
   String nextAlias() {
     String alias;
