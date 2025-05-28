@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:speed_test/src/test_runner.dart';
+import 'package:speed_test/speed_test.dart';
 
 void main(List<String> args) async {
   if (args.isEmpty) {
@@ -9,6 +9,7 @@ void main(List<String> args) async {
   }
 
   final projectPath = args[0];
-  final runner = TestRunner(projectPath);
+  final coverage = args.contains('--coverage');
+  final runner = TestRunner(projectPath, coverage: coverage);
   await runner.execute();
 }
