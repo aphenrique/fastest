@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:speed_test/src/test_runner.dart';
+import 'package:fastest/src/test_runner.dart';
 
 void main(List<String> args) async {
   if (args.isEmpty) {

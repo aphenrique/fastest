@@ -1,0 +1,16 @@
+# Arquivos de desenvolvimento
+.dart_tool/
+.idea/
+.vscode/
+*.iml
+
+# Arquivos de build
+build/
+coverage/
+
+# Arquivos de teste
+test/
+
+# Outros
+.packages
+pubspec.lock
