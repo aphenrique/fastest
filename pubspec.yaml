@@ -6,7 +6,7 @@ homepage: https://github.com/aphenrique/speed_test
 documentation: https://github.com/aphenrique/speed_test/blob/main/README.md
 
 environment:
-  sdk: ^3.5.0
+  sdk: ">=3.2.0 <4.0.0"
 
 dependencies:
   path: ^1.8.0
