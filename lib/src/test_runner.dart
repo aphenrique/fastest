@@ -8,10 +8,17 @@ import 'test_finder.dart';
 class TestRunner {
   final String projectPath;
   final bool coverage;
+  final int concurrency;
 
-  TestRunner(this.projectPath, {this.coverage = false});
+  TestRunner(
+    this.projectPath, {
+    this.coverage = false,
+    this.concurrency = 4,
+  });
 
   Future<void> execute() async {
+    final stopwatch = Stopwatch()..start();
+
     final testFile = generateTestFile(projectPath);
 
     if (coverage) {
@@ -27,7 +34,7 @@ class TestRunner {
     final testArgs = [
       'test',
       testFile,
-      '--concurrency=4',
+      '--concurrency=$concurrency',
     ];
 
     if (coverage) {
@@ -51,6 +58,31 @@ class TestRunner {
       print('\n🏆 Todos os testes passaram com sucesso!');
     }
 
+    stopwatch.stop();
+    final duration = stopwatch.elapsed;
+
+    // Formatando o tempo de execução
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds % 60;
+    final milliseconds = duration.inMilliseconds % 1000;
+
+    print(
+        '\nTempo total de execução: ${_formatDuration(minutes, seconds, milliseconds)}');
+
     exit(result.exitCode);
+  }
+
+  String _formatDuration(int minutes, int seconds, int milliseconds) {
+    final parts = <String>[];
+
+    if (minutes > 0) {
+      parts.add('${minutes}m');
+    }
+    if (seconds > 0 || minutes > 0) {
+      parts.add('${seconds}s');
+    }
+    parts.add('${milliseconds}ms');
+
+    return parts.join(' ');
   }
 }

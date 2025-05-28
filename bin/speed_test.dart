@@ -10,6 +10,10 @@ void main(List<String> args) async {
 
   final projectPath = args[0];
   final coverage = args.contains('--coverage');
-  final runner = TestRunner(projectPath, coverage: coverage);
+  final concurrency =
+      args.contains('--concurrency') ? Platform.numberOfProcessors : 1;
+
+  final runner =
+      TestRunner(projectPath, coverage: coverage, concurrency: concurrency);
   await runner.execute();
 }

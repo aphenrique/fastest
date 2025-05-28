@@ -1,12 +1,13 @@
 name: speed_test
-description: A Dart package for running tests in parallel using shards.
+description: Uma ferramenta Dart para execução rápida e eficiente de testes unitários, especialmente otimizada para projetos Flutter.
 version: 0.1.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/aphenrique/speed_test
+homepage: https://github.com/aphenrique/speed_test
+documentation: https://github.com/aphenrique/speed_test/blob/main/README.md
 
 environment:
   sdk: ^3.5.0
 
-# Add regular dependencies here.
 dependencies:
   path: ^1.8.0
 
@@ -15,4 +16,10 @@ dev_dependencies:
   test: ^1.24.0
 
 executables:
-  speedtest: speed_test
+  speed_test: speed_test
+
+topics:
+  - test
+  - flutter
+  - performance
+  - cli
