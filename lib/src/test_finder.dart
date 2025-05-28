@@ -14,14 +14,24 @@ List<File> findTestFiles(Directory directory) {
   return testFiles;
 }
 
+class TestFailure {
+  final String fileName;
+  final String executionTime;
+
+  TestFailure(this.fileName, this.executionTime);
+}
+
 Set<String> findFailedTests(String output) {
   final failedTests = <String>{};
-  final lines = output.split('\n');
 
-  for (final line in lines) {
-    if (line.contains('_test.dart') && line.contains('[E]')) {
-      final fileName = line.trim().split(' ').first;
-      failedTests.add(fileName);
+  for (final line in output.split('\n')) {
+    if (line.contains('[E]')) {
+      for (final part in line.split(' ')) {
+        if (part.endsWith('_test.dart')) {
+          failedTests.add(part);
+          break;
+        }
+      }
     }
   }
 

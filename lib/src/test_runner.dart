@@ -15,21 +15,24 @@ class TestRunner {
 
     final result = await Process.run(
       'flutter',
-      ['test', testFile],
+      [
+        'test',
+        testFile,
+        '--concurrency=4',
+      ],
       runInShell: true,
       workingDirectory: projectPath,
     );
-
-    stdout.write(result.stdout);
-    stderr.write(result.stderr);
 
     final failedTests = findFailedTests(result.stdout.toString());
     if (failedTests.isNotEmpty) {
       print('\nArquivos com falha:');
       for (final test in failedTests) {
-        print('- $test');
+        print('❌ $test');
       }
     }
+
+    
 
     exit(result.exitCode);
   }
