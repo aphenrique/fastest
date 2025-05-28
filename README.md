@@ -1,4 +1,4 @@
-# Speed Test 🚀
+# FastTest 🚀
 
 Uma ferramenta Dart para execução rápida e eficiente de testes unitários, especialmente otimizada para projetos Flutter.
 
@@ -11,7 +11,7 @@ Uma ferramenta Dart para execução rápida e eficiente de testes unitários, es
 ## Instalação 📦
 
 ```bash
-dart pub global activate speed_test
+dart pub global activate fastest
 ```
 
 ## Uso 🔧
@@ -19,13 +19,13 @@ dart pub global activate speed_test
 Execute os testes em seu projeto:
 
 ```bash
-speed_test .
+fastest .
 ```
 
 Com cobertura de código:
 
 ```bash
-speed_test . --coverage
+fastest . --coverage
 ```
 
 ## Como Funciona 🛠
@@ -59,25 +59,25 @@ MIT License - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ### Projeto Básico
 ```bash
-speed_test .
+fastest .
 ```
 
 ### Com Cobertura
 ```bash
-speed_test . --coverage
+fastest . --coverage
 ```
 
 ### Próximas Implementações (Em Breve)
 
 #### Projetos Modulares
 ```bash
-speed_test . --modules=all
-speed_test . --modules=core,feature1,feature2
+fastest . --modules=all
+fastest . --modules=core,feature1,feature2
 ```
 
 #### Configurações Personalizadas
 ```bash
-speed_test . --concurrency=8 --reporter=detailed
+fastest . --concurrency=8 --reporter=detailed
 ```
 
 ## Suporte
