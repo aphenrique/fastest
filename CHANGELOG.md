@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Refactoring to minimalistic result
+
 ## 0.1.1
 
 - Update readme
