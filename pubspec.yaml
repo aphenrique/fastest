@@ -1,6 +1,6 @@
 name: fastest
 description: Uma ferramenta Dart para execução rápida e eficiente de testes unitários, especialmente otimizada para projetos Flutter.
-version: 0.1.2
+version: 0.1.3
 repository: https://github.com/aphenrique/fastest
 homepage: https://github.com/aphenrique/fastest
 documentation: https://github.com/aphenrique/fastest/blob/main/README.md
