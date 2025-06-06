@@ -5,7 +5,6 @@ import 'package:path/path.dart' as path;
 import 'alias_generator.dart';
 import 'colored_output.dart';
 import 'console_color.dart';
-import 'test_finder.dart';
 
 class TestOptimizer {
   String call(String projectPath) {
@@ -16,7 +15,7 @@ class TestOptimizer {
       exit(1);
     }
 
-    final testFiles = findTestFiles(testDir);
+    final testFiles = _findTestFiles(testDir);
     if (testFiles.isEmpty) {
       ColoredOutput.writeln(ConsoleColor.red,
           'Nenhum arquivo de teste encontrado em: ${testDir.path}');
@@ -63,14 +62,27 @@ class TestOptimizer {
 
       buffer.write("  group('$fileName', () {");
       buffer.write("$alias.main();");
-      buffer.write("});");
+      buffer.writeln("});");
     }
 
     buffer.writeln('}');
 
     mainTestFile.writeAsStringSync(buffer.toString());
-    // print('Arquivo de testes gerado em: ${mainTestFile.path}');
 
     return mainTestFilePath;
+  }
+
+  List<File> _findTestFiles(Directory directory) {
+    final testFiles = <File>[];
+
+    for (final entity in directory.listSync(recursive: true)) {
+      if (entity is File &&
+          entity.path.endsWith('_test.dart') &&
+          !entity.path.endsWith('optimized_tests.dart')) {
+        testFiles.add(entity);
+      }
+    }
+
+    return testFiles;
   }
 }

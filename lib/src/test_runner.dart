@@ -24,8 +24,8 @@ class TestRunner {
     if (coverage) {
       final coverageDir = Directory(path.join(projectPath, 'coverage'));
       if (coverageDir.existsSync()) {
-        ColoredOutput.printColor(
-            ConsoleColor.yellow, '\nRemovendo pasta coverage antiga...');
+        ColoredOutput.writeln(
+            ConsoleColor.yellow, '... Removendo pasta coverage antiga');
         coverageDir.deleteSync(recursive: true);
       }
     }
