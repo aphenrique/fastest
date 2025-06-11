@@ -1,36 +1,25 @@
 import 'dart:io';
 
-import 'package:args/args.dart';
+import 'package:fastest/src/args_parser.dart';
 import 'package:fastest/src/colored_output.dart';
 import 'package:fastest/src/console_color.dart';
+import 'package:fastest/src/coverage_check.dart';
 import 'package:fastest/src/test_optimizer.dart';
 import 'package:fastest/src/test_runner.dart';
 
 void main(List<String> args) async {
-  final parser = ArgParser()
-    ..addFlag(
-      'coverage',
-      negatable: false,
-      help: 'Habilita a coleta de cobertura de código',
-    )
-    ..addFlag(
-      'concurrency',
-      negatable: false,
-      help: 'Habilita execução concorrente dos testes',
-    )
-    ..addOption(
-      'path',
-      defaultsTo: Directory.current.path,
-      help:
-          'Caminho da pasta de testes (opcional, usa pasta atual se não informado)',
-      valueHelp: 'path',
-    );
+  final parser = ArgsParser();
 
   try {
-    final results = parser.parse(args);
+    final results = await parser(args);
     final rest = results.rest;
 
     final coverage = results['coverage'] as bool;
+
+    if (coverage) {
+      await CoverageCheck.verify();
+    }
+
     final concurrency =
         results['concurrency'] as bool ? Platform.numberOfProcessors : 1;
 

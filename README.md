@@ -84,7 +84,8 @@ fastest --path=caminho/para/pasta
 ### Opções Disponíveis
 
 ```bash
-# Execução com cobertura usando o pacote coverage [https://pub.dev/packages/coverage]
+# Execução com cobertura de código
+# Verifica e instala automaticamente o pacote coverage se necessário
 fastest --coverage
 
 # Execução concorrente (usa todos os cores disponíveis)
