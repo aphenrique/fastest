@@ -1,3 +1,17 @@
+## 0.1.4
+
+### Features
+- Verificação e/ou instalação automática do pacote full_coverage
+- Suporte a múltiplas formas de especificar o caminho dos testes:
+  - Sem argumentos (pasta atual)
+  - Primeiro argumento posicional
+  - Opção --path
+
+### Improvements
+- Melhor tratamento de erros
+- Feedback visual aprimorado com cores
+- Documentação atualizada
+
 ## 0.1.3
 
 - Refactoring outputs

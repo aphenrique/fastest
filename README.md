@@ -5,8 +5,10 @@ Uma ferramenta Dart para execução rápida e eficiente de testes unitários, es
 ## Características ✨
 
 - **Saída Simplificada**: Mostra apenas nomes dos arquivos de testes com falhas
-- **Suporte a Cobertura**: Geração de relatórios de cobertura de código
+- **Suporte a Cobertura**: Geração de relatórios de cobertura de código com instalação interativa do pacote full_coverage
 - **Performance**: Significativamente mais rápido que a execução padrão do Flutter test
+- **Interface Amigável**: Feedback visual com cores e mensagens claras
+- **Flexibilidade**: Múltiplas formas de especificar o caminho dos testes
 
 ## Instalação 📦
 
@@ -22,7 +24,9 @@ echo ".test_optimizer.dart" >> .gitignore
 ## Como Funciona 🛠
 
 1. **Geração de Testes**: Cria um arquivo único que agrupa todos os testes e executa "flutter test" neste único arquivo
-3. **Relatório Otimizado**: Mostra apenas os arquivos que falharam
+2. **Verificação de Dependências**: Verifica e oferece instalação interativa do pacote full_coverage quando necessário
+3. **Execução Otimizada**: Suporte a execução concorrente para melhor performance
+4. **Relatório Otimizado**: Mostra apenas os arquivos que falharam com feedback visual em cores
 
 ## Por que usar Speed Test?
 
@@ -74,7 +78,7 @@ fastest --path=caminho/para/pasta
 
 ```bash
 # Execução com cobertura de código
-# Verifica e instala automaticamente o pacote coverage se necessário
+# Verifica e instala interativamente o pacote full_coverage se necessário
 fastest --coverage
 
 # Execução concorrente (usa todos os cores disponíveis)
