@@ -1,4 +1,4 @@
-# FastTest 🚀
+# FasTest 🚀
 
 Uma ferramenta Dart para execução rápida e eficiente de testes unitários, especialmente otimizada para projetos Flutter.
 
@@ -28,7 +28,7 @@ echo ".test_optimizer.dart" >> .gitignore
 3. **Execução Otimizada**: Suporte a execução concorrente para melhor performance
 4. **Relatório Otimizado**: Mostra apenas os arquivos que falharam com feedback visual em cores
 
-## Por que usar Speed Test?
+## Por que usar FasTest?
 
 - **Economia de Tempo**: Reduz significativamente o tempo de execução dos testes
 - **Facilidade de Uso**: Interface simples e direta
