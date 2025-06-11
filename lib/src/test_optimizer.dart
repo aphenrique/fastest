@@ -7,8 +7,8 @@ import 'colored_output.dart';
 import 'console_color.dart';
 
 class TestOptimizer {
-  String call(String projectPath) {
-    final testDir = Directory(path.join(projectPath, 'test'));
+  String call(String testPath) {
+    final testDir = Directory(path.join(testPath, 'test')).absolute;
     if (!testDir.existsSync()) {
       ColoredOutput.writeln(
         ConsoleColor.red,
@@ -33,7 +33,7 @@ class TestOptimizer {
       mainTestFile.deleteSync();
     }
 
-    ColoredOutput.writeln(ConsoleColor.cyan, 'Caminho > $projectPath');
+    ColoredOutput.writeln(ConsoleColor.cyan, 'Caminho > $testPath');
     ColoredOutput.writeln(ConsoleColor.yellow, '... Otimizando os testes');
 
     final buffer = StringBuffer();
