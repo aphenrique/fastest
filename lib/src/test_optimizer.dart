@@ -26,7 +26,7 @@ class TestOptimizer {
       exit(1);
     }
 
-    final mainTestFilePath = path.join(testDir.path, 'optimized_tests.dart');
+    final mainTestFilePath = path.join(testDir.path, '.test_optimizer.dart');
     final mainTestFile = File(mainTestFilePath);
 
     if (mainTestFile.existsSync()) {
@@ -85,7 +85,7 @@ class TestOptimizer {
     for (final entity in directory.listSync(recursive: true)) {
       if (entity is File &&
           entity.path.endsWith('_test.dart') &&
-          !entity.path.endsWith('optimized_tests.dart')) {
+          !entity.path.endsWith('.test_optimizer.dart')) {
         testFiles.add(entity);
       }
     }
