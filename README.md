@@ -35,26 +35,6 @@ echo ".test_optimizer.dart" >> .gitignore
 - **Manutenção**: Saída limpa e focada no caso de falhas
 - **Escalabilidade**: Preparado para projetos grandes e modulares
 
-### Próximas Implementações (Em Breve)
-
-#### Projetos Modulares
-```bash
-fastest . --modules=all
-fastest . --modules=core,feature1,feature2
-```
-
-#### Configurações Personalizadas
-```bash
-fastest . --concurrency=8 --reporter=detailed
-```
-
-## Suporte
-
-- Abra uma issue para reportar bugs
-- Discussões para novas features
-- Pull Requests são bem-vindos
-
-
 ## Uso 🔧
 
 Execute os testes em seu projeto de três formas diferentes:
@@ -95,9 +75,14 @@ fastest caminho/para/pasta --coverage --concurrency
   - [ ] Execução paralela entre módulos
   - [ ] Relatório consolidado
 
-## Contribuindo
 
-Contribuições são bem-vindas! Por favor, leia nossas diretrizes de contribuição antes de submeter um PR.
+## Suporte
+
+- Abra uma issue para reportar bugs
+- Discussões para novas features
+- Pull Requests são bem-vindos
+
+Contribuições são bem-vindas! Faça um clone do repositório e submeta seu PR com uma boa descrição do objetivo e execução do código adicionado.
 
 ## Licença
 
