@@ -8,6 +8,7 @@ enum ConsoleColor {
   white('\x1B[37m'),
   reset('\x1B[0m');
 
-  final String ansi;
   const ConsoleColor(this.ansi);
+
+  final String ansi;
 }

@@ -10,15 +10,19 @@ class TestOptimizer {
   String call(String projectPath) {
     final testDir = Directory(path.join(projectPath, 'test'));
     if (!testDir.existsSync()) {
-      ColoredOutput.writeln(ConsoleColor.red,
-          'Diretório de testes não encontrado em: ${testDir.path}');
+      ColoredOutput.writeln(
+        ConsoleColor.red,
+        'Diretório de testes não encontrado em: ${testDir.path}',
+      );
       exit(1);
     }
 
     final testFiles = _findTestFiles(testDir);
     if (testFiles.isEmpty) {
-      ColoredOutput.writeln(ConsoleColor.red,
-          'Nenhum arquivo de teste encontrado em: ${testDir.path}');
+      ColoredOutput.writeln(
+        ConsoleColor.red,
+        'Nenhum arquivo de teste encontrado em: ${testDir.path}',
+      );
       exit(1);
     }
 
@@ -36,10 +40,12 @@ class TestOptimizer {
     final aliasGenerator = AliasGenerator();
     final aliasMap = <String, String>{};
 
-    buffer.writeln("// ATENÇÃO: Este arquivo é gerado automaticamente.");
-    buffer.writeln(
-        "// Não modifique manualmente, pois suas alterações serão sobrescritas.\n");
-    buffer.writeln("import 'package:flutter_test/flutter_test.dart';");
+    buffer
+      ..writeln('// ATENÇÃO: Este arquivo é gerado automaticamente.')
+      ..writeln(
+        '// Não modifique manualmente, pois suas alterações serão sobrescritas.\n',
+      )
+      ..writeln("import 'package:flutter_test/flutter_test.dart';");
 
     /// Ordena os arquivos para garantir consistência nos aliases
     final sortedFiles = List<File>.from(testFiles)
@@ -60,9 +66,10 @@ class TestOptimizer {
       final fileName = path.basename(file.path);
       final alias = aliasMap[file.path]!;
 
-      buffer.write("  group('$fileName', () {");
-      buffer.write("$alias.main();");
-      buffer.writeln("});");
+      buffer
+        ..write("  group('$fileName', () {")
+        ..write('$alias.main();')
+        ..writeln('});');
     }
 
     buffer.writeln('}');

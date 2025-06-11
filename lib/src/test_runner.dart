@@ -7,25 +7,28 @@ import 'console_color.dart';
 import 'test_optimizer.dart';
 
 class TestRunner {
-  final bool coverage;
-  final int concurrency;
-  final TestOptimizer testOptimizer;
-
   TestRunner(
     this.testOptimizer, {
     this.coverage = false,
     this.concurrency = 4,
+    required this.testPath,
   });
 
+  final bool coverage;
+  final int concurrency;
+  final String testPath;
+  final TestOptimizer testOptimizer;
+
   Future<void> execute() async {
-    final projectPath = Directory.current.path;
-    final testFile = testOptimizer(projectPath);
+    final testFile = testOptimizer(testPath);
 
     if (coverage) {
-      final coverageDir = Directory(path.join(projectPath, 'coverage'));
+      final coverageDir = Directory(path.join(testPath, 'coverage'));
       if (coverageDir.existsSync()) {
         ColoredOutput.writeln(
-            ConsoleColor.yellow, '... Removendo pasta coverage antiga');
+          ConsoleColor.yellow,
+          '... Removendo pasta coverage antiga',
+        );
         coverageDir.deleteSync(recursive: true);
       }
     }
@@ -46,7 +49,7 @@ class TestRunner {
       'flutter',
       testArgs,
       runInShell: true,
-      workingDirectory: projectPath,
+      workingDirectory: testPath,
       mode: ProcessStartMode.inheritStdio,
     );
 

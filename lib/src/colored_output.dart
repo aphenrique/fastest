@@ -3,8 +3,11 @@ import 'dart:io';
 import 'console_color.dart';
 
 class ColoredOutput {
-  static void printColor(ConsoleColor color, String text,
-      {bool reset = false}) {
+  static void printColor(
+    ConsoleColor color,
+    String text, {
+    bool reset = false,
+  }) {
     print('${color.ansi}$text${ConsoleColor.reset.ansi}');
   }
 

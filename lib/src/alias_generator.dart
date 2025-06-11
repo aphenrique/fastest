@@ -15,7 +15,7 @@ class AliasGenerator {
     'on',
     'set',
     'try',
-    'var'
+    'var',
   };
 
   String nextAlias() {
