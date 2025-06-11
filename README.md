@@ -14,26 +14,15 @@ Uma ferramenta Dart para execução rápida e eficiente de testes unitários, es
 dart pub global activate fastest
 ```
 
+Adicione o arquivo gerado pelo otimizador ao seu `.gitignore`:
+```bash
+echo ".test_optimizer.dart" >> .gitignore
+```
 
 ## Como Funciona 🛠
 
 1. **Geração de Testes**: Cria um arquivo único que agrupa todos os testes e executa "flutter test" neste único arquivo
 3. **Relatório Otimizado**: Mostra apenas os arquivos que falharam
-
-## Roadmap 🗺
-
-- [ ] Suporte a projetos modulares Flutter
-  - [ ] Detecção automática de módulos
-  - [ ] Execução paralela entre módulos
-  - [ ] Relatório consolidado
-
-## Contribuindo
-
-Contribuições são bem-vindas! Por favor, leia nossas diretrizes de contribuição antes de submeter um PR.
-
-## Licença
-
-MIT License - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ## Por que usar Speed Test?
 
@@ -94,3 +83,18 @@ fastest --concurrency
 # Exemplo combinando opções
 fastest caminho/para/pasta --coverage --concurrency
 ```
+
+## Roadmap 🗺
+
+- [ ] Suporte a projetos modulares Flutter
+  - [ ] Detecção automática de módulos
+  - [ ] Execução paralela entre módulos
+  - [ ] Relatório consolidado
+
+## Contribuindo
+
+Contribuições são bem-vindas! Por favor, leia nossas diretrizes de contribuição antes de submeter um PR.
+
+## Licença
+
+MIT License - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
