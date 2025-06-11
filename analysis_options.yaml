@@ -47,7 +47,6 @@ linter:
     - unrelated_type_equality_checks
     - valid_regexps
     - always_declare_return_types
-    - always_put_control_body_on_new_line
     - always_require_non_null_named_parameters
     - annotate_overrides
     - avoid_bool_literals_in_conditional_expressions
@@ -78,7 +77,6 @@ linter:
     - cascade_invocations
     - cast_nullable_to_non_nullable
     - conditional_uri_does_not_exist
-    - curly_braces_in_flow_control_structures
     - deprecated_consistency
     - empty_catches
     - empty_constructor_bodies
