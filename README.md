@@ -14,19 +14,6 @@ Uma ferramenta Dart para execução rápida e eficiente de testes unitários, es
 dart pub global activate fastest
 ```
 
-## Uso 🔧
-
-Execute os testes em seu projeto:
-
-```bash
-fastest .
-```
-
-Com cobertura de código:
-
-```bash
-fastest . --coverage
-```
 
 ## Como Funciona 🛠
 
@@ -55,18 +42,6 @@ MIT License - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 - **Manutenção**: Saída limpa e focada no caso de falhas
 - **Escalabilidade**: Preparado para projetos grandes e modulares
 
-## Exemplos de Uso 📝
-
-### Projeto Básico
-```bash
-fastest .
-```
-
-### Com Cobertura
-```bash
-fastest . --coverage
-```
-
 ### Próximas Implementações (Em Breve)
 
 #### Projetos Modulares
@@ -85,3 +60,36 @@ fastest . --concurrency=8 --reporter=detailed
 - Abra uma issue para reportar bugs
 - Discussões para novas features
 - Pull Requests são bem-vindos
+
+
+## Uso 🔧
+
+Execute os testes em seu projeto de três formas diferentes:
+
+1. Na pasta atual:
+```bash
+fastest
+```
+
+2. Especificando a pasta como primeiro argumento:
+```bash
+fastest caminho/para/pasta
+```
+
+3. Usando a opção --path:
+```bash
+fastest --path=caminho/para/pasta
+```
+
+### Opções Disponíveis
+
+```bash
+# Execução com cobertura usando o pacote coverage [https://pub.dev/packages/coverage]
+fastest --coverage
+
+# Execução concorrente (usa todos os cores disponíveis)
+fastest --concurrency
+
+# Exemplo combinando opções
+fastest caminho/para/pasta --coverage --concurrency
+```
