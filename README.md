@@ -9,6 +9,8 @@ Uma ferramenta Dart para execução rápida e eficiente de testes unitários, es
 - **Performance**: Significativamente mais rápido que a execução padrão do Flutter test
 - **Interface Amigável**: Feedback visual com cores e mensagens claras
 - **Flexibilidade**: Múltiplas formas de especificar o caminho dos testes
+- **Execução Paralela**: Suporte a execução paralela entre módulos com controle de concorrência
+- **Suporte a Monorepo**: Execução automática em todos os pacotes de um monorepo
 
 ## Instalação 📦
 
@@ -49,11 +51,6 @@ fastest
 fastest caminho/para/pasta
 ```
 
-3. Usando a opção --path:
-```bash
-fastest --path=caminho/para/pasta
-```
-
 ### Opções Disponíveis
 
 ```bash
@@ -62,11 +59,35 @@ fastest --path=caminho/para/pasta
 # Use -y para instalar automaticamente
 fastest --coverage
 
-# Execução concorrente (usa todos os cores disponíveis)
-fastest --concurrency
+# Desabilita execução multicore
+fastest --no-concurrency
 
-# Exemplo combinando opções
-fastest caminho/para/pasta --coverage --concurrency
+# Define a quantidade de núcleos a serem utilizados
+fastest caminho/para/pasta --concurrency=[4]
+```
+
+## Execução Paralela 🔄
+
+O FasTest agora suporta execução paralela de testes entre módulos:
+
+- Detecta automaticamente pacotes com testes no monorepo
+- Executa testes em paralelo respeitando o limite de concorrência
+- Controla recursos do sistema limitando execuções simultâneas
+- Mantém feedback em tempo real da execução de cada módulo
+
+## Monorepo 📦
+
+No modo monorepo (`--package`), o FasTest:
+
+- Busca automaticamente nas subpastas todos os pacotes que contêm testes
+- Executa os testes de cada pacote em paralelo
+- Respeita o limite de concorrência definido
+- Fornece feedback individual por pacote
+- Agrega os resultados em um único relatório
+
+```bash
+# Execução em modo monorepo (busca e executa testes em todos os pacotes)
+fastest --package
 ```
 
 ## Roadmap 🗺

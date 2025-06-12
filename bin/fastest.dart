@@ -16,10 +16,15 @@ void main(List<String> args) async {
     final rest = results.rest;
 
     final coverage = results['coverage'] as bool;
-    final isMonorepo = results['monorepo'] as bool;
+    final isPackage = results['package'] as bool;
     final autoConfirm = results['yes'] as bool;
-    final concurrency =
-        results['concurrency'] as bool ? Platform.numberOfProcessors : 1;
+    final concurrency = results['no-concurrency'] as bool
+        ? 1
+        : int.parse(results['concurrency'] as String);
+    ColoredOutput.writeln(
+      ConsoleColor.green,
+      'Parallel cores: $concurrency',
+    );
 
     if (coverage) {
       await CoverageCheck.verify(autoConfirm: autoConfirm);
@@ -29,7 +34,7 @@ void main(List<String> args) async {
     // Caso contrário, usa o valor da opção --path
     final testPath = rest.isNotEmpty ? rest.first : results['path'] as String;
 
-    if (isMonorepo) {
+    if (isPackage) {
       final runner = MonorepoRunner(
         rootPath: testPath,
         coverage: coverage,

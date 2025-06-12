@@ -36,36 +36,51 @@ class MonorepoRunner {
     );
 
     var hasFailures = false;
-    final executeList = <Future<void>>[];
+    final queue = packages.toList();
+    final running = <Future<void>>[];
 
-    for (final package in packages) {
-      ColoredOutput.writeln(
-        ConsoleColor.yellow,
-        '\nExecutando testes em: ${package.path}',
-      );
+    while (queue.isNotEmpty || running.isNotEmpty) {
+      // Preenche o pool até o máximo permitido pelo concurrency
+      while (queue.isNotEmpty && running.length < concurrency) {
+        final package = queue.removeAt(0);
 
-      try {
-        final runner = TestRunner(
-          TestOptimizer(),
-          coverage: coverage,
-          concurrency: concurrency,
-          testPath: package.path,
-        );
-
-        executeList.add(
-          Isolate.run(runner.execute),
-        );
-        // await runner.execute();
-      } catch (e) {
-        hasFailures = true;
         ColoredOutput.writeln(
-          ConsoleColor.red,
-          'Falha ao executar testes em: ${package.path}',
+          ConsoleColor.yellow,
+          '\nExecutando testes em: ${package.path}',
         );
+
+        try {
+          final runner = TestRunner(
+            TestOptimizer(),
+            coverage: coverage,
+            concurrency: concurrency,
+            testPath: package.path,
+          );
+
+          final future = Isolate.run(runner.execute).catchError((error) {
+            hasFailures = true;
+            ColoredOutput.writeln(
+              ConsoleColor.red,
+              'Falha ao executar testes em: ${package.path}',
+            );
+            return 2;
+          });
+
+          running.add(future);
+        } catch (e) {
+          hasFailures = true;
+          ColoredOutput.writeln(
+            ConsoleColor.red,
+            'Falha ao executar testes em: ${package.path}',
+          );
+        }
+      }
+
+      // Espera pelo menos um dos testes completar antes de continuar
+      if (running.isNotEmpty) {
+        await Future.wait([running.removeAt(0)]);
       }
     }
-
-    await Future.wait(executeList);
 
     if (hasFailures) {
       exit(1);

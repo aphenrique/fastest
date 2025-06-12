@@ -1,3 +1,8 @@
+## 0.1.8
+
+- Adiciona execução em monorepo
+- Adiciona paralelismo para execução em monorepo
+
 ## 0.1.7
 
 - Adiciona autoconfirm
