@@ -17,6 +17,12 @@ class ArgsParser {
       negatable: false,
       help: 'Habilita execução concorrente dos testes',
     )
+    ..addFlag(
+      'yes',
+      abbr: 'y',
+      negatable: false,
+      help: 'Responde sim automaticamente para todas as confirmações',
+    )
     ..addOption(
       'path',
       abbr: 'p',

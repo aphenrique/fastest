@@ -15,9 +15,10 @@ void main(List<String> args) async {
     final rest = results.rest;
 
     final coverage = results['coverage'] as bool;
+    final autoConfirm = results['yes'] as bool;
 
     if (coverage) {
-      await CoverageCheck.verify();
+      await CoverageCheck.verify(autoConfirm: autoConfirm);
     }
 
     final concurrency =

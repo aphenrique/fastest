@@ -9,7 +9,7 @@ class CoverageCheck {
   ///
   /// Retorna `true` se o pacote está disponível (já instalado ou instalado com sucesso).
   /// Retorna `false` se houve algum erro na verificação ou instalação.
-  static Future<bool> verify() async {
+  static Future<bool> verify({bool autoConfirm = false}) async {
     try {
       final result = await Process.run('dart', ['pub', 'global', 'list']);
       final hasFullCoverage =
@@ -21,22 +21,24 @@ class CoverageCheck {
           '\nPacote full_coverage não encontrado.',
         );
 
-        ColoredOutput.write(
-          ConsoleColor.yellow,
-          'Deseja instalar o pacote full_coverage? (S/n) ',
-        );
-
-        final response = stdin.readLineSync()?.toLowerCase();
-        if (response != '' && response != 's' && response != 'sim') {
-          ColoredOutput.writeln(
+        if (!autoConfirm) {
+          ColoredOutput.write(
             ConsoleColor.yellow,
-            '\nPara instalar manualmente mais tarde, execute:',
+            'Deseja instalar o pacote full_coverage? (S/n) ',
           );
-          ColoredOutput.writeln(
-            ConsoleColor.white,
-            '> dart pub global activate full_coverage\n',
-          );
-          return false;
+
+          final response = stdin.readLineSync()?.toLowerCase();
+          if (response != '' && response != 's' && response != 'sim') {
+            ColoredOutput.writeln(
+              ConsoleColor.yellow,
+              '\nPara instalar manualmente mais tarde, execute:',
+            );
+            ColoredOutput.writeln(
+              ConsoleColor.white,
+              '> dart pub global activate full_coverage\n',
+            );
+            return false;
+          }
         }
 
         ColoredOutput.writeln(

@@ -16,7 +16,7 @@ List<File> findTestFiles(Directory directory) {
 
 class TestFailure {
   TestFailure(this.fileName, this.executionTime);
-  
+
   final String fileName;
   final String executionTime;
 }

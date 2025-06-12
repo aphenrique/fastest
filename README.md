@@ -59,6 +59,7 @@ fastest --path=caminho/para/pasta
 ```bash
 # Execução com cobertura de código
 # Verifica e instala interativamente o pacote full_coverage se necessário
+# Use -y para instalar automaticamente
 fastest --coverage
 
 # Execução concorrente (usa todos os cores disponíveis)

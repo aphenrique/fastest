@@ -1,3 +1,7 @@
+## 0.1.7
+
+- Adiciona autoconfirm
+
 ## 0.1.6
 
 - Update README
