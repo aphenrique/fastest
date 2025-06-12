@@ -20,6 +20,17 @@
             "args": [
                 "-c",
             ]
+        },
+        {
+            "name": "fastest monorepo",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "../smartfit-app/infrastructures",
+                "-m",
+                "-y",
+                "-c"
+            ]
         }
     ]
 }

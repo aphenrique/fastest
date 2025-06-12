@@ -18,6 +18,12 @@ class ArgsParser {
       help: 'Habilita execução concorrente dos testes',
     )
     ..addFlag(
+      'monorepo',
+      abbr: 'm',
+      negatable: false,
+      help: 'Executa testes em modo monorepo, buscando packages em subpastas',
+    )
+    ..addFlag(
       'yes',
       abbr: 'y',
       negatable: false,

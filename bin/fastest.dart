@@ -4,6 +4,7 @@ import 'package:fastest/src/args_parser.dart';
 import 'package:fastest/src/colored_output.dart';
 import 'package:fastest/src/console_color.dart';
 import 'package:fastest/src/coverage_check.dart';
+import 'package:fastest/src/monorepo_runner.dart';
 import 'package:fastest/src/test_optimizer.dart';
 import 'package:fastest/src/test_runner.dart';
 
@@ -15,29 +16,36 @@ void main(List<String> args) async {
     final rest = results.rest;
 
     final coverage = results['coverage'] as bool;
+    final isMonorepo = results['monorepo'] as bool;
     final autoConfirm = results['yes'] as bool;
+    final concurrency =
+        results['concurrency'] as bool ? Platform.numberOfProcessors : 1;
 
     if (coverage) {
       await CoverageCheck.verify(autoConfirm: autoConfirm);
     }
 
-    final concurrency =
-        results['concurrency'] as bool ? Platform.numberOfProcessors : 1;
-
     // Se houver um argumento posicional, usa ele como caminho
     // Caso contrário, usa o valor da opção --path
     final testPath = rest.isNotEmpty ? rest.first : results['path'] as String;
 
-    final optimizer = TestOptimizer();
-
-    final runner = TestRunner(
-      optimizer,
-      coverage: coverage,
-      concurrency: concurrency,
-      testPath: testPath,
-    );
-
-    await runner.execute();
+    if (isMonorepo) {
+      final runner = MonorepoRunner(
+        rootPath: testPath,
+        coverage: coverage,
+        concurrency: concurrency,
+      );
+      await runner.execute();
+    } else {
+      final optimizer = TestOptimizer();
+      final runner = TestRunner(
+        optimizer,
+        coverage: coverage,
+        concurrency: concurrency,
+        testPath: testPath,
+      );
+      await runner.execute();
+    }
   } catch (e) {
     ColoredOutput.writeln(ConsoleColor.red, 'Erro ao executar o comando:');
     ColoredOutput.writeln(ConsoleColor.red, e.toString());

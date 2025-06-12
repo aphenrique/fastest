@@ -19,7 +19,7 @@ class TestRunner {
   final String testPath;
   final TestOptimizer testOptimizer;
 
-  Future<void> execute() async {
+  Future<int> execute() async {
     final testFile = testOptimizer(testPath);
 
     if (coverage) {
@@ -53,6 +53,6 @@ class TestRunner {
       mode: ProcessStartMode.inheritStdio,
     );
 
-    exit(await process.exitCode);
+    return process.exitCode;
   }
 }
