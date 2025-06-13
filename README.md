@@ -2,6 +2,10 @@
 
 Uma ferramenta Dart para execução rápida e eficiente de testes unitários, especialmente otimizada para projetos Flutter.
 
+## Antes e depois
+
+![](docs/images/fastest.png)
+
 ## Características ✨
 
 - **Saída Simplificada**: Mostra apenas nomes dos arquivos de testes com falhas
