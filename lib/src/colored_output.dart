@@ -18,4 +18,8 @@ class ColoredOutput {
   static void writeln(ConsoleColor color, String text, {bool reset = false}) {
     stdout.writeln('${color.ansi}$text${ConsoleColor.reset.ansi}');
   }
+
+  static String line(ConsoleColor color, String text, {bool reset = false}) {
+    return '${color.ansi}$text${ConsoleColor.reset.ansi}\n';
+  }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
@@ -22,18 +23,31 @@ class TestRunner {
   Future<int> execute() async {
     final testFile = testOptimizer(testPath);
 
+    final output = <String>[];
+    final errors = <String>[];
+
+    final packageName = getPackageName(testPath);
+
     if (coverage) {
       final coverageDir = Directory(path.join(testPath, 'coverage'));
+
       if (coverageDir.existsSync()) {
-        ColoredOutput.writeln(
-          ConsoleColor.yellow,
-          '... Removendo pasta coverage antiga',
+        output.add(
+          ColoredOutput.line(
+            ConsoleColor.yellow,
+            '$packageName > Removendo pasta coverage antiga',
+          ),
         );
         coverageDir.deleteSync(recursive: true);
       }
     }
 
-    ColoredOutput.writeln(ConsoleColor.yellow, '... Executando os testes\n');
+    output.add(
+      ColoredOutput.line(
+        ConsoleColor.yellow,
+        '$packageName > Executando os testes',
+      ),
+    );
 
     final testArgs = [
       'test',
@@ -50,9 +64,65 @@ class TestRunner {
       testArgs,
       runInShell: true,
       workingDirectory: testPath,
-      mode: ProcessStartMode.inheritStdio,
     );
 
-    return process.exitCode;
+    process.stdout.transform(const SystemEncoding().decoder).listen((event) {
+      if (event.contains('[E]')) {
+        errors.add(
+          ColoredOutput.line(
+            ConsoleColor.red,
+            '$packageName > $event',
+          ),
+        );
+        return;
+      }
+
+      if (event.contains('All tests passed!')) {
+        output.add(
+          ColoredOutput.line(
+            ConsoleColor.green,
+            '$packageName > $event',
+          ),
+        );
+        return;
+      }
+
+      if (event.contains('Some tests failed')) {
+        errors.add(
+          ColoredOutput.line(
+            ConsoleColor.red,
+            '$packageName > $event',
+          ),
+        );
+        return;
+      }
+    });
+
+    process.stderr.transform(const SystemEncoding().decoder).listen((event) {
+      if (event.startsWith('Waiting for another flutter command')) {
+        return;
+      }
+
+      errors.add(event);
+    });
+
+    final exitCode = await process.exitCode;
+
+    if (output.isNotEmpty) {
+      stdout
+        ..write('\r\x1B[K') // Limpa a linha do loading
+        ..write(output.join());
+    }
+
+    if (errors.isNotEmpty) {
+      stdout.write(errors.join());
+    }
+
+    return exitCode;
+  }
+
+  String getPackageName(String testPath) {
+    final packageName = path.basename(testPath);
+    return packageName;
   }
 }

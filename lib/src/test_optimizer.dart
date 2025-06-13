@@ -33,8 +33,8 @@ class TestOptimizer {
       mainTestFile.deleteSync();
     }
 
-    ColoredOutput.writeln(ConsoleColor.cyan, 'Caminho > $testPath');
-    ColoredOutput.writeln(ConsoleColor.yellow, '... Otimizando os testes');
+    // ColoredOutput.writeln(ConsoleColor.cyan, 'Caminho > $testPath');
+    // ColoredOutput.writeln(ConsoleColor.yellow, '... Otimizando os testes');
 
     final buffer = StringBuffer();
     final aliasGenerator = AliasGenerator();

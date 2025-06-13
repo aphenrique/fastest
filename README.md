@@ -4,7 +4,7 @@ Uma ferramenta Dart para execução rápida e eficiente de testes unitários, es
 
 ## Antes e depois
 
-![](docs/images/fastest.png)
+![](doc/images/fastest.png)
 
 ## Características ✨
 

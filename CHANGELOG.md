@@ -1,3 +1,7 @@
+## 0.1.9
+
+- Formata saída para monorepo
+
 ## 0.1.8
 
 - Adiciona execução em monorepo

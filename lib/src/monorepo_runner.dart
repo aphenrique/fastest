@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -32,22 +33,32 @@ class MonorepoRunner {
 
     ColoredOutput.writeln(
       ConsoleColor.cyan,
-      'Encontrados ${packages.length} pacotes:',
+      'Encontrados ${packages.length} pacotes:\n',
     );
 
     var hasFailures = false;
     final queue = packages.toList();
-    final running = <Future<void>>[];
+    final running = <Future<int>>[];
+
+    // Iniciar o loading animation
+    var isRunning = true;
+    final loadingChars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+    var loadingIndex = 0;
+
+    Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (!isRunning) {
+        timer.cancel();
+        return;
+      }
+
+      stdout.write('\r${loadingChars[loadingIndex]} Executando testes...');
+      loadingIndex = (loadingIndex + 1) % loadingChars.length;
+    });
 
     while (queue.isNotEmpty || running.isNotEmpty) {
       // Preenche o pool até o máximo permitido pelo concurrency
       while (queue.isNotEmpty && running.length < concurrency) {
         final package = queue.removeAt(0);
-
-        ColoredOutput.writeln(
-          ConsoleColor.yellow,
-          '\nExecutando testes em: ${package.path}',
-        );
 
         try {
           final runner = TestRunner(
@@ -81,6 +92,8 @@ class MonorepoRunner {
         await Future.wait([running.removeAt(0)]);
       }
     }
+
+    isRunning = false;
 
     if (hasFailures) {
       exit(1);
