@@ -1,53 +1,36 @@
 import 'dart:io';
 
 import 'package:fastest/src/args/args_parser.dart';
+import 'package:fastest/src/coverage/coverage_check.dart';
+import 'package:fastest/src/optimizer/test_optimizer.dart';
 import 'package:fastest/src/output/colored_output.dart';
 import 'package:fastest/src/output/console_color.dart';
-import 'package:fastest/src/coverage/coverage_check.dart';
 import 'package:fastest/src/runner/monorepo_runner.dart';
-import 'package:fastest/src/optimizer/test_optimizer.dart';
 import 'package:fastest/src/runner/test_runner.dart';
 
 void main(List<String> args) async {
-  final parser = ArgsParser();
+  final parser = ArgsParser.instance;
 
   try {
-    final results = await parser(args);
-    final rest = results.rest;
-
-    final coverage = results['coverage'] as bool;
-    final isPackage = results['package'] as bool;
-    final autoConfirm = results['yes'] as bool;
-    final failFast = results['fail-fast'] as bool;
-    final concurrency = results['no-concurrency'] as bool
-        ? 1
-        : int.parse(results['concurrency'] as String);
-    ColoredOutput.writeln(
-      ConsoleColor.green,
-      'Parallel cores: $concurrency',
-    );
-
-    if (coverage) {
-      await CoverageCheck.verify(autoConfirm: autoConfirm);
+    await parser(args);
+    
+    if (parser.coverage) {
+      await CoverageCheck.verify(autoConfirm: parser.autoConfirm);
     }
 
-    // Se houver um argumento posicional, usa ele como caminho
-    // Caso contrário, usa o valor da opção --path
-    final testPath = rest.isNotEmpty ? rest.first : results['path'] as String;
-
-    final runner = switch (isPackage) {
+    final runner = switch (parser.isPackage) {
       true => MonorepoRunner(
-          rootPath: testPath,
-          coverage: coverage,
-          concurrency: concurrency,
-          failFast: failFast,
+          rootPath: parser.testPath,
+          coverage: parser.coverage,
+          concurrency: parser.concurrency,
+          failFast: parser.failFast,
         ),
       false => TestRunner(
           TestOptimizer(),
-          coverage: coverage,
-          concurrency: concurrency,
-          testPath: testPath,
-          failFast: failFast,
+          coverage: parser.coverage,
+          concurrency: parser.concurrency,
+          testPath: parser.testPath,
+          failFast: parser.failFast,
         ),
     };
 
