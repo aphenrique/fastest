@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
-import 'colored_output.dart';
-import 'console_color.dart';
+import '../output/colored_output.dart';
+import '../output/console_color.dart';
 import 'runner.dart';
-import 'test_optimizer.dart';
+import '../optimizer/test_optimizer.dart';
 
 class TestRunner implements Runner {
   TestRunner(

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 
 import 'alias_generator.dart';
-import 'colored_output.dart';
-import 'console_color.dart';
+import '../output/colored_output.dart';
+import '../output/console_color.dart';
 
 class TestOptimizer {
   String call(String testPath) {

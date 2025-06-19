@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:fastest/src/args_parser.dart';
-import 'package:fastest/src/colored_output.dart';
-import 'package:fastest/src/console_color.dart';
-import 'package:fastest/src/coverage_check.dart';
-import 'package:fastest/src/monorepo_runner.dart';
-import 'package:fastest/src/test_optimizer.dart';
-import 'package:fastest/src/test_runner.dart';
+import 'package:fastest/src/args/args_parser.dart';
+import 'package:fastest/src/output/colored_output.dart';
+import 'package:fastest/src/output/console_color.dart';
+import 'package:fastest/src/coverage/coverage_check.dart';
+import 'package:fastest/src/runner/monorepo_runner.dart';
+import 'package:fastest/src/optimizer/test_optimizer.dart';
+import 'package:fastest/src/runner/test_runner.dart';
 
 void main(List<String> args) async {
   final parser = ArgsParser();

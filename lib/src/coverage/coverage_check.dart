@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'colored_output.dart';
-import 'console_color.dart';
+import '../output/colored_output.dart';
+import '../output/console_color.dart';
 
 class CoverageCheck {
   /// Verifica se o pacote full_coverage está instalado globalmente.
