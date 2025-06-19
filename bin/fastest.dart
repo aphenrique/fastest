@@ -18,6 +18,7 @@ void main(List<String> args) async {
     final coverage = results['coverage'] as bool;
     final isPackage = results['package'] as bool;
     final autoConfirm = results['yes'] as bool;
+    final failFast = results['fail-fast'] as bool;
     final concurrency = results['no-concurrency'] as bool
         ? 1
         : int.parse(results['concurrency'] as String);
@@ -34,23 +35,23 @@ void main(List<String> args) async {
     // Caso contrário, usa o valor da opção --path
     final testPath = rest.isNotEmpty ? rest.first : results['path'] as String;
 
-    if (isPackage) {
-      final runner = MonorepoRunner(
-        rootPath: testPath,
-        coverage: coverage,
-        concurrency: concurrency,
-      );
-      await runner.execute();
-    } else {
-      final optimizer = TestOptimizer();
-      final runner = TestRunner(
-        optimizer,
-        coverage: coverage,
-        concurrency: concurrency,
-        testPath: testPath,
-      );
-      await runner.execute();
-    }
+    final runner = switch (isPackage) {
+      true => MonorepoRunner(
+          rootPath: testPath,
+          coverage: coverage,
+          concurrency: concurrency,
+          failFast: failFast,
+        ),
+      false => TestRunner(
+          TestOptimizer(),
+          coverage: coverage,
+          concurrency: concurrency,
+          testPath: testPath,
+          failFast: failFast,
+        ),
+    };
+
+    await runner.execute();
   } catch (e) {
     ColoredOutput.writeln(ConsoleColor.red, 'Erro ao executar o comando:');
     ColoredOutput.writeln(ConsoleColor.red, e.toString());

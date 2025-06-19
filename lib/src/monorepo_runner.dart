@@ -6,20 +6,24 @@ import 'package:path/path.dart' as path;
 
 import 'colored_output.dart';
 import 'console_color.dart';
+import 'runner.dart';
 import 'test_optimizer.dart';
 import 'test_runner.dart';
 
-class MonorepoRunner {
+class MonorepoRunner implements Runner {
   MonorepoRunner({
     required this.rootPath,
     required this.coverage,
     required this.concurrency,
+    this.failFast = false,
   });
 
   final String rootPath;
   final bool coverage;
   final int concurrency;
+  final bool failFast;
 
+  @override
   Future<void> execute() async {
     final rootDir = Directory(rootPath);
     if (!rootDir.existsSync()) {
@@ -45,15 +49,15 @@ class MonorepoRunner {
     final loadingChars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
     var loadingIndex = 0;
 
-    Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (!isRunning) {
-        timer.cancel();
-        return;
-      }
+    // Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    //   if (!isRunning) {
+    //     timer.cancel();
+    //     return;
+    //   }
 
-      stdout.write('\r${loadingChars[loadingIndex]} Executando testes...');
-      loadingIndex = (loadingIndex + 1) % loadingChars.length;
-    });
+    //   stdout.write('\r${loadingChars[loadingIndex]} Executando testes...');
+    //   loadingIndex = (loadingIndex + 1) % loadingChars.length;
+    // });
 
     while (queue.isNotEmpty || running.isNotEmpty) {
       // Preenche o pool até o máximo permitido pelo concurrency
@@ -66,6 +70,7 @@ class MonorepoRunner {
             coverage: coverage,
             concurrency: concurrency,
             testPath: package.path,
+            failFast: failFast,
           );
 
           final future = Isolate.run(runner.execute).catchError((error) {
@@ -89,7 +94,11 @@ class MonorepoRunner {
 
       // Espera pelo menos um dos testes completar antes de continuar
       if (running.isNotEmpty) {
-        await Future.wait([running.removeAt(0)]);
+        final results = await Future.wait([running.removeAt(0)]);
+        if (failFast && results.any((code) => code != 0)) {
+          isRunning = false;
+          exit(1);
+        }
       }
     }
 

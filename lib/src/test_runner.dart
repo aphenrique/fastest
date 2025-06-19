@@ -5,21 +5,25 @@ import 'package:path/path.dart' as path;
 
 import 'colored_output.dart';
 import 'console_color.dart';
+import 'runner.dart';
 import 'test_optimizer.dart';
 
-class TestRunner {
+class TestRunner implements Runner {
   TestRunner(
     this.testOptimizer, {
     this.coverage = false,
     this.concurrency = 4,
     required this.testPath,
+    this.failFast = false,
   });
 
   final bool coverage;
   final int concurrency;
   final String testPath;
   final TestOptimizer testOptimizer;
+  final bool failFast;
 
+  @override
   Future<int> execute() async {
     final testFile = testOptimizer(testPath);
 
@@ -116,6 +120,12 @@ class TestRunner {
 
     if (errors.isNotEmpty) {
       stdout.write(errors.join());
+
+      if (failFast) {
+        /// Exit code 5 is used to indicate that the test failed and the
+        /// execution should be interrupted.
+        exit(5);
+      }
     }
 
     return exitCode;

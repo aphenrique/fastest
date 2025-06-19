@@ -29,6 +29,11 @@ class ArgsParser {
       negatable: false,
       help: 'Desabilita execução concorrente dos testes',
     )
+    ..addFlag(
+      'fail-fast',
+      negatable: false,
+      help: 'Interrompe a execução ao primeiro teste que falhar',
+    )
     ..addOption(
       'path',
       defaultsTo: Directory.current.path,
