@@ -1,3 +1,7 @@
+## 0.1.10
+
+- Implementa fail-fast
+
 ## 0.1.9
 
 - Formata saída para monorepo
