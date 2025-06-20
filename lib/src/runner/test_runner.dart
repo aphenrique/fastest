@@ -3,71 +3,53 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
+import '../optimizer/test_optimizer.dart';
 import '../output/colored_output.dart';
 import '../output/console_color.dart';
 import 'runner.dart';
-import '../optimizer/test_optimizer.dart';
 
 class TestRunner implements Runner {
-  TestRunner(
-    this.testOptimizer, {
-    this.coverage = false,
-    this.concurrency = 4,
+  TestRunner({
     required this.testPath,
+    this.coverage = false,
+    this.concurrency = 1,
     this.failFast = false,
+    this.verbose = false,
   });
 
+  final String testPath;
   final bool coverage;
   final int concurrency;
-  final String testPath;
-  final TestOptimizer testOptimizer;
   final bool failFast;
+  final bool verbose;
+
+  String get packageName => path.basename(testPath);
+
+  ProcessStartMode get processStartMode =>
+      verbose ? ProcessStartMode.inheritStdio : ProcessStartMode.normal;
 
   @override
   Future<int> execute() async {
-    final testFile = testOptimizer(testPath);
+    verifyCoverage(testPath, coverage);
+
+    final testFile = TestOptimizer()(testPath);
 
     final output = <String>[];
     final errors = <String>[];
 
-    final packageName = getPackageName(testPath);
-
-    if (coverage) {
-      final coverageDir = Directory(path.join(testPath, 'coverage'));
-
-      if (coverageDir.existsSync()) {
-        output.add(
-          ColoredOutput.line(
-            ConsoleColor.yellow,
-            '$packageName > Removendo pasta coverage antiga',
-          ),
-        );
-        coverageDir.deleteSync(recursive: true);
-      }
-    }
-
     output.add(
       ColoredOutput.line(
         ConsoleColor.yellow,
-        '$packageName > Executando os testes',
+        '$packageName > Executando testes...',
       ),
     );
 
-    final testArgs = [
-      'test',
-      testFile,
-      '--concurrency=$concurrency',
-    ];
-
-    if (coverage) {
-      testArgs.add('--coverage');
-    }
-
     final process = await Process.start(
       'flutter',
-      testArgs,
+      getTestArgs(testFile, coverage, concurrency),
       runInShell: true,
       workingDirectory: testPath,
+      mode: processStartMode,
     );
 
     process.stdout.transform(const SystemEncoding().decoder).listen((event) {
@@ -131,8 +113,27 @@ class TestRunner implements Runner {
     return exitCode;
   }
 
-  String getPackageName(String testPath) {
-    final packageName = path.basename(testPath);
-    return packageName;
+  void verifyCoverage(String testPath, bool coverage) {
+    if (coverage) {
+      final coverageDir = Directory(path.join(testPath, 'coverage'));
+
+      if (coverageDir.existsSync()) {
+        coverageDir.deleteSync(recursive: true);
+      }
+    }
+  }
+
+  List<String> getTestArgs(String testFile, bool coverage, int concurrency) {
+    final testArgs = ['test', testFile];
+
+    if (concurrency > 1) {
+      testArgs.add('--concurrency=$concurrency');
+    }
+
+    if (coverage) {
+      testArgs.add('--coverage');
+    }
+
+    return testArgs;
   }
 }

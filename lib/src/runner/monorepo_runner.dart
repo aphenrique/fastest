@@ -7,7 +7,6 @@ import 'package:path/path.dart' as path;
 import '../output/colored_output.dart';
 import '../output/console_color.dart';
 import 'runner.dart';
-import '../optimizer/test_optimizer.dart';
 import 'test_runner.dart';
 
 class MonorepoRunner implements Runner {
@@ -16,15 +15,17 @@ class MonorepoRunner implements Runner {
     required this.coverage,
     required this.concurrency,
     this.failFast = false,
+    this.verbose = false,
   });
 
   final String rootPath;
   final bool coverage;
   final int concurrency;
   final bool failFast;
-
+  final bool verbose;
+  
   @override
-  Future<void> execute() async {
+  Future<int> execute() async {
     final rootDir = Directory(rootPath);
     if (!rootDir.existsSync()) {
       throw Exception('Diretório raiz não encontrado: $rootPath');
@@ -49,15 +50,15 @@ class MonorepoRunner implements Runner {
     final loadingChars = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
     var loadingIndex = 0;
 
-    // Timer.periodic(const Duration(milliseconds: 100), (timer) {
-    //   if (!isRunning) {
-    //     timer.cancel();
-    //     return;
-    //   }
+    Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (!isRunning) {
+        timer.cancel();
+        return;
+      }
 
-    //   stdout.write('\r${loadingChars[loadingIndex]} Executando testes...');
-    //   loadingIndex = (loadingIndex + 1) % loadingChars.length;
-    // });
+      stdout.write('\r${loadingChars[loadingIndex]} Executando testes...');
+      loadingIndex = (loadingIndex + 1) % loadingChars.length;
+    });
 
     while (queue.isNotEmpty || running.isNotEmpty) {
       // Preenche o pool até o máximo permitido pelo concurrency
@@ -66,7 +67,6 @@ class MonorepoRunner implements Runner {
 
         try {
           final runner = TestRunner(
-            TestOptimizer(),
             coverage: coverage,
             concurrency: concurrency,
             testPath: package.path,
@@ -97,7 +97,7 @@ class MonorepoRunner implements Runner {
         final results = await Future.wait([running.removeAt(0)]);
         if (failFast && results.any((code) => code != 0)) {
           isRunning = false;
-          exit(1);
+          return 1;
         }
       }
     }
@@ -105,9 +105,9 @@ class MonorepoRunner implements Runner {
     isRunning = false;
 
     if (hasFailures) {
-      exit(1);
+      return 1;
     } else {
-      exit(0);
+      return 0;
     }
   }
 

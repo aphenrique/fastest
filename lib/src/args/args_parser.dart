@@ -15,6 +15,7 @@ class ArgsParser {
   late final bool isPackage;
   late final bool autoConfirm;
   late final bool failFast;
+  late final bool verbose;
   late final int concurrency;
 
   late final String testPath;
@@ -28,17 +29,17 @@ class ArgsParser {
     isPackage = results['package'] as bool;
     autoConfirm = results['yes'] as bool;
     failFast = results['fail-fast'] as bool;
+    verbose = results['verbose'] as bool;
     concurrency = results['no-concurrency'] as bool
         ? 1
         : int.parse(results['concurrency'] as String);
-
     // Se houver um argumento posicional, usa ele como caminho
     // Caso contrário, usa o valor da opção --path
     testPath = rest.isNotEmpty ? rest.first : results['path'] as String;
   }
 
   String get usage => parser.usage;
-  final parser = ArgParser()
+  final parser = ArgParser(allowTrailingOptions: false)
     ..addFlag(
       'coverage',
       abbr: 'c',
@@ -66,6 +67,11 @@ class ArgsParser {
       'fail-fast',
       negatable: false,
       help: 'Interrompe a execução ao primeiro teste que falhar',
+    )
+    ..addFlag(
+      'verbose',
+      negatable: false,
+      help: 'Exibe saída detalhada dos testes',
     )
     ..addOption(
       'path',
