@@ -5,12 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "fastest all commands",
+            "name": "repo",
             "request": "launch",
             "type": "dart",
             "args": [
-                "-c",
-                "--concurrency"
+                "../smartfit-app/infrastructures/api_provider",
             ]
         },
         {
@@ -26,10 +25,18 @@
             "request": "launch",
             "type": "dart",
             "args": [
+                "-p",
                 "../smartfit-app/infrastructures",
-                "-m",
-                "-y",
-                "-c"
+            ]
+        },
+        {
+            "name": "fastest verbose",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "-vp",
+                "--fail-fast",
+                "../smartfit-app/infrastructures",
             ]
         }
     ]

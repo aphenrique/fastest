@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:fastest/src/args/args_parser.dart';
 import 'package:fastest/src/coverage/coverage_check.dart';
-import 'package:fastest/src/output/colored_output.dart';
-import 'package:fastest/src/output/console_color.dart';
 import 'package:fastest/src/runner/runner.dart';
+import 'package:fastest/src/view/colored_output.dart';
+import 'package:fastest/src/view/console_color.dart';
 
 void main(List<String> args) async {
   final parser = ArgsParser.instance;
@@ -29,7 +29,6 @@ void main(List<String> args) async {
 
     exit(exitCode);
   } catch (e) {
-    ColoredOutput.writeln(ConsoleColor.red, 'Erro ao executar o comando:');
     ColoredOutput.writeln(ConsoleColor.red, e.toString());
     ColoredOutput.writeln(
       ConsoleColor.red,

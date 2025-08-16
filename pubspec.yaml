@@ -12,8 +12,8 @@ dependencies:
   path: ^1.9.1
   args: ^2.7.0
 
-# dev_dependencies:
-# test: ^1.25.0
+dev_dependencies:
+  test: ^1.25.0
 
 executables:
   fastest: fastest

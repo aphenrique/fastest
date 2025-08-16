@@ -14,13 +14,6 @@ List<File> findTestFiles(Directory directory) {
   return testFiles;
 }
 
-class TestFailure {
-  TestFailure(this.fileName, this.executionTime);
-
-  final String fileName;
-  final String executionTime;
-}
-
 Set<String> findFailedTests(String output) {
   final failedTests = <String>{};
 

@@ -4,8 +4,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 
 import '../optimizer/test_optimizer.dart';
-import '../output/colored_output.dart';
-import '../output/console_color.dart';
+import '../view/test_output.dart';
 import 'runner.dart';
 
 class TestRunner implements Runner {
@@ -23,91 +22,36 @@ class TestRunner implements Runner {
   final bool failFast;
   final bool verbose;
 
-  String get packageName => path.basename(testPath);
+  final TestOptimizer testOptimizer = TestOptimizer();
 
-  ProcessStartMode get processStartMode =>
-      verbose ? ProcessStartMode.inheritStdio : ProcessStartMode.normal;
+  String get packageName => path.basename(testPath);
 
   @override
   Future<int> execute() async {
+    final testOutput = TestOutput(
+      verbose,
+      packageName: packageName,
+      failFast: failFast,
+    );
     verifyCoverage(testPath, coverage);
 
-    final testFile = TestOptimizer()(testPath);
-
-    final output = <String>[];
-    final errors = <String>[];
-
-    output.add(
-      ColoredOutput.line(
-        ConsoleColor.yellow,
-        '$packageName > Executando testes...',
-      ),
-    );
+    final testFile = testOptimizer(testPath);
 
     final process = await Process.start(
       'flutter',
       getTestArgs(testFile, coverage, concurrency),
       runInShell: true,
       workingDirectory: testPath,
-      mode: processStartMode,
     );
 
-    process.stdout.transform(const SystemEncoding().decoder).listen((event) {
-      if (event.contains('[E]')) {
-        errors.add(
-          ColoredOutput.line(
-            ConsoleColor.red,
-            '$packageName > $event',
-          ),
-        );
-        return;
-      }
-
-      if (event.contains('All tests passed!')) {
-        output.add(
-          ColoredOutput.line(
-            ConsoleColor.green,
-            '$packageName > $event',
-          ),
-        );
-        return;
-      }
-
-      if (event.contains('Some tests failed')) {
-        errors.add(
-          ColoredOutput.line(
-            ConsoleColor.red,
-            '$packageName > $event',
-          ),
-        );
-        return;
-      }
-    });
-
-    process.stderr.transform(const SystemEncoding().decoder).listen((event) {
-      if (event.startsWith('Waiting for another flutter command')) {
-        return;
-      }
-
-      errors.add(event);
-    });
+    testOutput
+      ..output(process.stdout)
+      ..error(process.stderr);
 
     final exitCode = await process.exitCode;
 
-    if (output.isNotEmpty) {
-      stdout
-        ..write('\r\x1B[K') // Limpa a linha do loading
-        ..write(output.join());
-    }
-
-    if (errors.isNotEmpty) {
-      stdout.write(errors.join());
-
-      if (failFast) {
-        /// Exit code 5 is used to indicate that the test failed and the
-        /// execution should be interrupted.
-        exit(5);
-      }
+    if (failFast && exitCode != 0) {
+      exit(5);
     }
 
     return exitCode;
