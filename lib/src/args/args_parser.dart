@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 
-import '../output/colored_output.dart';
-import '../output/console_color.dart';
+import '../view/colored_output.dart';
+import '../view/console_color.dart';
 
 class ArgsParser {
   ArgsParser._();
@@ -29,7 +29,7 @@ class ArgsParser {
     isPackage = results['package'] as bool;
     autoConfirm = results['yes'] as bool;
     failFast = results['fail-fast'] as bool;
-    verbose = results['verbose'] as bool;
+    verbose = results['verbose'] as bool || !isPackage;
     concurrency = results['no-concurrency'] as bool
         ? 1
         : int.parse(results['concurrency'] as String);
@@ -39,6 +39,7 @@ class ArgsParser {
   }
 
   String get usage => parser.usage;
+
   final parser = ArgParser(allowTrailingOptions: false)
     ..addFlag(
       'coverage',
@@ -70,6 +71,7 @@ class ArgsParser {
     )
     ..addFlag(
       'verbose',
+      abbr: 'v',
       negatable: false,
       help: 'Exibe saída detalhada dos testes',
     )
@@ -94,7 +96,7 @@ class ArgsParser {
         } else {
           ColoredOutput.writeln(
             ConsoleColor.green,
-            'Parallel cores: $intValue',
+            'Parallel cors: $intValue',
           );
         }
       },
