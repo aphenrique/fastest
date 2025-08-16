@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
+import '../view/colored_output.dart';
+import '../view/console_color.dart';
 import 'alias_generator.dart';
-import '../output/colored_output.dart';
-import '../output/console_color.dart';
 
 class TestOptimizer {
   String call(String testPath) {
@@ -32,9 +32,6 @@ class TestOptimizer {
     if (mainTestFile.existsSync()) {
       mainTestFile.deleteSync();
     }
-
-    // ColoredOutput.writeln(ConsoleColor.cyan, 'Caminho > $testPath');
-    // ColoredOutput.writeln(ConsoleColor.yellow, '... Otimizando os testes');
 
     final buffer = StringBuffer();
     final aliasGenerator = AliasGenerator();
