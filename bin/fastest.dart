@@ -7,7 +7,7 @@ import 'package:fastest/src/view/colored_output.dart';
 import 'package:fastest/src/view/console_color.dart';
 
 void main(List<String> args) async {
-  final parser = ArgsParser.instance;
+  final parser = ArgsParser();
 
   try {
     await parser(args);
