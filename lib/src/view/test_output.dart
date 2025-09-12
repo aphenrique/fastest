@@ -228,10 +228,10 @@ class StandardModeTestOutput implements TestOutput {
           stdout
             ..writeln('\r\x1B[K') // Limpa a linha do loading
             ..writeln(errorsList.join('\n').replaceAll('\n\n\n', '\n'));
-        }
 
-        if (failFast) {
-          exit(1);
+          if (failFast) {
+            exit(1);
+          }
         }
         controller.close();
       },

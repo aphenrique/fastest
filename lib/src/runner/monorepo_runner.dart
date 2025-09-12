@@ -36,8 +36,8 @@ class MonorepoRunner implements Runner {
       processHandler: _processHandler,
     );
 
-    final loading = LoadingIndicator();
-    loading.start();
+    final loading = LoadingIndicator()
+    ..start();
 
     try {
       return await executor.execute();

@@ -87,9 +87,9 @@ class MonorepoExecutor {
             hasFailures = true;
             ColoredOutput.writeln(
               ConsoleColor.red,
-              'Falha ao executar testes em: ${package.path}',
+              'Falha ao executar testes em: ${package.name}\nErro: $error',
             );
-            return 2;
+            return 1;
           });
 
           running.add(future);
@@ -105,8 +105,13 @@ class MonorepoExecutor {
       // Espera pelo menos um dos testes completar antes de continuar
       if (running.isNotEmpty) {
         final results = await Future.wait([running.removeFirst()]);
-        if (failFast && results.any((code) => code != 0)) {
-          return 9;
+        final exitCode = results.first;
+        if (failFast && exitCode != 0) {
+          ColoredOutput.writeln(
+            ConsoleColor.red,
+            '\nTestes interrompidos devido ao --fail-fast',
+          );
+          return exitCode;
         }
       }
     }
