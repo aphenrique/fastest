@@ -17,7 +17,9 @@ class TestRunner implements Runner {
     this.failFast = false,
     this.verbose = false,
     ProcessHandler? processHandler,
-  }) : _processHandler = processHandler ?? const DefaultProcessHandler();
+    TestOutput? testOutput,
+  })  : _processHandler = processHandler ?? const DefaultProcessHandler(),
+        _testOutput = testOutput;
 
   final String testPath;
   final bool coverage;
@@ -25,6 +27,7 @@ class TestRunner implements Runner {
   final bool failFast;
   final bool verbose;
   final ProcessHandler _processHandler;
+  final TestOutput? _testOutput;
 
   final _testOptimizer = TestOptimizer();
   final _coverageHandler = CoverageHandler();
@@ -34,11 +37,12 @@ class TestRunner implements Runner {
 
   @override
   Future<int> execute() async {
-    final testOutput = TestOutput(
-      verbose,
-      packageName: packageName,
-      failFast: failFast,
-    );
+    final testOutput = _testOutput ??
+        TestOutput(
+          verbose,
+          packageName: packageName,
+          failFast: failFast,
+        );
 
     _coverageHandler.verifyCoverage(testPath, coverage);
 

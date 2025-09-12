@@ -42,8 +42,12 @@ class DefaultProcessHandler implements ProcessHandler {
     Stream<List<int>> Function(Stream<List<int>>) outputHandler,
     Stream<List<int>> Function(Stream<List<int>>) errorHandler,
   ) async {
-    outputHandler(process.stdout);
-    errorHandler(process.stderr);
+    // Aguarda a conclusão dos streams de saída e erro
+    await Future.wait([
+      outputHandler(process.stdout).drain(),
+      errorHandler(process.stderr).drain(),
+    ]);
+
     return process.exitCode;
   }
 }
