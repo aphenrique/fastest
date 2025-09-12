@@ -28,6 +28,19 @@ class FetchPhotosUsecaseImpl implements FetchPhotosUsecase {
 }
 ```
 
+### Steps of coding
+
+- Write code
+- Write unit test
+- Check and fix error warnings
+- Check and fix lint warnings
+
+### Variables
+
+- Prefer use final vars.
+- Name vars with a expressive name
+- Don't type var if it can infer the type
+
 ### Functions
 
 - Write short functions with a single purpose (max 25 lines).
@@ -37,7 +50,6 @@ class FetchPhotosUsecaseImpl implements FetchPhotosUsecase {
 - Avoid nesting blocks by:
   - Early returns and guard clauses.
   - Extraction to utility functions.
-- Prefer use final vars.
 - Maintain a single level of abstraction per function.
 
 ### Classes and Interfaces

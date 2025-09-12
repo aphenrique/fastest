@@ -23,8 +23,8 @@ abstract class TestOutput {
     }
   }
 
-  void output(Stream<List<int>> output);
-  void error(Stream<List<int>> output);
+  Stream<List<int>> output(Stream<List<int>> output);
+  Stream<List<int>> error(Stream<List<int>> output);
 }
 
 class VerboseModeTestOutput implements TestOutput {
@@ -37,7 +37,7 @@ class VerboseModeTestOutput implements TestOutput {
   final bool failFast;
 
   @override
-  void output(Stream<List<int>> output) {
+  Stream<List<int>> output(Stream<List<int>> output) {
     output.transform(const SystemEncoding().decoder).listen((event) {
       if (event.isEmpty) return;
 
@@ -46,7 +46,6 @@ class VerboseModeTestOutput implements TestOutput {
           ConsoleColor.red,
           '$packageName > $event',
         );
-
         return;
       }
 
@@ -54,13 +53,13 @@ class VerboseModeTestOutput implements TestOutput {
         ConsoleColor.green,
         '$packageName > $event',
       );
-
-      return;
     });
+
+    return output;
   }
 
   @override
-  void error(Stream<List<int>> output) {
+  Stream<List<int>> error(Stream<List<int>> output) {
     output.transform(const SystemEncoding().decoder).listen((event) {
       if (event.isEmpty ||
           event.startsWith('Waiting for another flutter command')) return;
@@ -70,6 +69,8 @@ class VerboseModeTestOutput implements TestOutput {
         '$packageName > $event',
       );
     });
+
+    return output;
   }
 }
 
@@ -93,7 +94,7 @@ class StandardModeTestOutput implements TestOutput {
   final errorsList = <String>[];
 
   @override
-  void output(Stream<List<int>> output) {
+  Stream<List<int>> output(Stream<List<int>> output) {
     output.transform(const SystemEncoding().decoder).listen((event) {
       if (event.isEmpty) return;
 
@@ -117,10 +118,12 @@ class StandardModeTestOutput implements TestOutput {
         return;
       }
     });
+
+    return output;
   }
 
   @override
-  void error(Stream<List<int>> output) {
+  Stream<List<int>> error(Stream<List<int>> output) {
     output.transform(const SystemEncoding().decoder).listen((event) {
       if (event.isEmpty ||
           event.startsWith('Waiting for another flutter command')) return;
@@ -137,5 +140,7 @@ class StandardModeTestOutput implements TestOutput {
     if (failFast) {
       exit(1);
     }
+
+    return output;
   }
 }

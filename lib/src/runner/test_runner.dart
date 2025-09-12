@@ -1,28 +1,34 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:path/path.dart' as path;
 
 import '../optimizer/test_optimizer.dart';
+import '../process/process_handler.dart';
 import '../view/test_output.dart';
+import 'coverage_handler.dart';
 import 'runner.dart';
+import 'test_arguments_builder.dart';
 
+/// Executor de testes Flutter que gerencia o processo de execução dos testes
 class TestRunner implements Runner {
+  /// Cria uma nova instância de TestRunner
   TestRunner({
     required this.testPath,
     this.coverage = false,
     this.concurrency = 1,
     this.failFast = false,
     this.verbose = false,
-  });
+    ProcessHandler? processHandler,
+  }) : _processHandler = processHandler ?? const DefaultProcessHandler();
 
   final String testPath;
   final bool coverage;
   final int concurrency;
   final bool failFast;
   final bool verbose;
+  final ProcessHandler _processHandler;
 
-  final TestOptimizer testOptimizer = TestOptimizer();
+  final _testOptimizer = TestOptimizer();
+  final _coverageHandler = CoverageHandler();
+  final _argsBuilder = TestArgumentsBuilder();
 
   String get packageName => path.basename(testPath);
 
@@ -33,51 +39,26 @@ class TestRunner implements Runner {
       packageName: packageName,
       failFast: failFast,
     );
-    verifyCoverage(testPath, coverage);
 
-    final testFile = testOptimizer(testPath);
+    _coverageHandler.verifyCoverage(testPath, coverage);
 
-    final process = await Process.start(
+    final testFile = _testOptimizer(testPath);
+    final args = _argsBuilder.build(
+      testFile: testFile,
+      coverage: coverage,
+      concurrency: concurrency,
+    );
+
+    final process = await _processHandler.startProcess(
       'flutter',
-      getTestArgs(testFile, coverage, concurrency),
-      runInShell: true,
+      args,
       workingDirectory: testPath,
     );
 
-    testOutput
-      ..output(process.stdout)
-      ..error(process.stderr);
-
-    final exitCode = await process.exitCode;
-
-    if (failFast && exitCode != 0) {
-      exit(5);
-    }
-
-    return exitCode;
-  }
-
-  void verifyCoverage(String testPath, bool coverage) {
-    if (coverage) {
-      final coverageDir = Directory(path.join(testPath, 'coverage'));
-
-      if (coverageDir.existsSync()) {
-        coverageDir.deleteSync(recursive: true);
-      }
-    }
-  }
-
-  List<String> getTestArgs(String testFile, bool coverage, int concurrency) {
-    final testArgs = ['test', testFile];
-
-    if (concurrency > 1) {
-      testArgs.add('--concurrency=$concurrency');
-    }
-
-    if (coverage) {
-      testArgs.add('--coverage');
-    }
-
-    return testArgs;
+    return _processHandler.handleProcessOutput(
+      process,
+      testOutput.output,
+      testOutput.error,
+    );
   }
 }

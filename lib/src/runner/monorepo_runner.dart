@@ -5,6 +5,7 @@ import 'dart:isolate';
 
 import 'package:path/path.dart' as path;
 
+import '../process/process_handler.dart';
 import '../view/colored_output.dart';
 import '../view/console_color.dart';
 import 'runner.dart';
@@ -17,13 +18,15 @@ class MonorepoRunner implements Runner {
     required this.concurrency,
     this.failFast = false,
     this.verbose = false,
-  });
+    ProcessHandler? processHandler,
+  }) : _processHandler = processHandler;
 
   final String rootPath;
   final bool coverage;
   final int concurrency;
   final bool failFast;
   final bool verbose;
+  final ProcessHandler? _processHandler;
 
   @override
   Future<int> execute() async {
@@ -71,9 +74,10 @@ class MonorepoRunner implements Runner {
           final runner = TestRunner(
             testPath: package.path,
             coverage: coverage,
-            // concurrency: concurrency,
+            concurrency: concurrency,
             failFast: failFast,
             verbose: verbose,
+            processHandler: _processHandler,
           );
 
           final future = Isolate.run(runner.execute).catchError((error) {
