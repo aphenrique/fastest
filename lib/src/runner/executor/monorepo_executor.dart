@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:isolate';
 
 import '../../process/process_handler.dart';
 import '../../view/colored_output.dart';
@@ -82,7 +83,7 @@ class MonorepoExecutor {
             testOutput: testOutput,
           );
 
-          final future = runner.execute().catchError((error) {
+          final future = Isolate.run(runner.execute).catchError((error) {
             hasFailures = true;
             ColoredOutput.writeln(
               ConsoleColor.red,
