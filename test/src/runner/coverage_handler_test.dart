@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:fastest/src/runner/coverage_handler.dart';
+import 'package:fastest/src/coverage_check/coverage_handler.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 

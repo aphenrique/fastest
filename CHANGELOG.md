@@ -1,3 +1,7 @@
+## 0.1.11
+
+- Corrige conflito no nome da pasta coverage
+
 ## 0.1.10
 
 - Implementa fail-fast

@@ -1,9 +1,9 @@
 import 'package:path/path.dart' as path;
 
+import '../coverage_check/coverage_handler.dart';
 import '../optimizer/test_optimizer.dart';
 import '../process/process_handler.dart';
 import '../view/test_output.dart';
-import 'coverage_handler.dart';
 import 'runner.dart';
 import 'test_arguments_builder.dart';
 
