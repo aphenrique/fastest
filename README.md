@@ -94,22 +94,26 @@ No modo monorepo (`--package`), o FasTest:
 fastest --package
 ```
 
-## Roadmap 🗺
+## Documentação 📚
 
-- [ ] Suporte a projetos modulares Flutter
-  - [ ] Detecção automática de módulos
-  - [ ] Execução paralela entre módulos
-  - [ ] Relatório consolidado
+Para informações detalhadas sobre arquitetura, API e contribuição, consulte a documentação completa:
 
+- **[📖 Documentação Completa](docs/README.md)** - Índice de toda a documentação
+- **[🏗️ Arquitetura](docs/ARCHITECTURE.md)** - Design e estrutura do projeto
+- **[📘 API Reference](docs/API.md)** - Referência completa da API
+- **[🤝 Guia de Contribuição](docs/CONTRIBUTING.md)** - Como contribuir com o projeto
+- **[🚀 Roadmap](docs/ROADMAP.md)** - Planejamento e features futuras
+- **[💡 Melhorias Propostas](docs/IMPROVEMENTS.md)** - Propostas de melhorias
 
-## Suporte
+## Suporte 💬
 
-- Abra uma issue para reportar bugs
-- Discussões para novas features
-- Pull Requests são bem-vindos
+- 🐛 **Bugs**: [Abra uma issue](https://github.com/aphenrique/fastest/issues/new?template=bug_report.md)
+- 💡 **Features**: [Inicie uma discussão](https://github.com/aphenrique/fastest/discussions/new?category=ideas)
+- 🤝 **Contribuições**: Veja o [Guia de Contribuição](docs/CONTRIBUTING.md)
+- 📖 **Documentação**: Consulte a [documentação completa](docs/README.md)
 
 Contribuições são bem-vindas! Faça um clone do repositório e submeta seu PR com uma boa descrição do objetivo e execução do código adicionado.
 
-## Licença
+## Licença 📄
 
 MIT License - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
