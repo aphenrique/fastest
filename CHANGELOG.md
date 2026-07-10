@@ -1,3 +1,13 @@
+## 0.2.0
+
+### Features
+- Nova saída dos resultados: contador de progresso `[i/n]`, tabela por pacote e lista clara de falhas agrupadas por arquivo
+- Resultados do monorepo agregados por pacote (sem saída misturada entre pacotes)
+
+### Refactor
+- Separação em camadas: novo `domain/` (PackageResult, ResultParser) e `presentation/` (ResultReporter)
+- Remoção de código morto (test_finder, process_runner, test_output, loading_indicator)
+
 ## 0.1.11
 
 - Corrige conflito no nome da pasta coverage
