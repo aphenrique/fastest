@@ -14,6 +14,7 @@ abstract class Runner {
     required int concurrency,
     required bool failFast,
     required bool verbose,
+    bool fvm = false,
     ProcessHandler? processHandler,
   }) {
     final handler = processHandler ?? const DefaultProcessHandler();
@@ -26,6 +27,7 @@ abstract class Runner {
           concurrency: concurrency,
           failFast: failFast,
           verbose: verbose,
+          fvm: fvm,
           processHandler: handler,
         );
       case false:
@@ -35,6 +37,7 @@ abstract class Runner {
           testPath: testPath,
           failFast: failFast,
           verbose: verbose,
+          fvm: fvm,
           processHandler: handler,
         );
     }

@@ -19,6 +19,7 @@ class MonorepoExecutor {
     this.coverage = false,
     this.failFast = false,
     this.verbose = false,
+    this.fvm = false,
     ProcessHandler? processHandler,
     ResultReporter reporter = const ResultReporter(),
   })  : _processHandler = processHandler,
@@ -31,6 +32,7 @@ class MonorepoExecutor {
   final bool coverage;
   final bool failFast;
   final bool verbose;
+  final bool fvm;
   final ProcessHandler? _processHandler;
   final ResultReporter _reporter;
   late final int _totalPackages;
@@ -54,6 +56,7 @@ class MonorepoExecutor {
         concurrency: concurrency,
         failFast: failFast,
         verbose: verbose,
+        fvm: fvm,
         processHandler: _processHandler,
       );
 

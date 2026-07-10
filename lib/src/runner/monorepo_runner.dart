@@ -11,6 +11,7 @@ class MonorepoRunner implements Runner {
     required this.concurrency,
     this.failFast = false,
     this.verbose = false,
+    this.fvm = false,
     ProcessHandler? processHandler,
   }) : _processHandler = processHandler;
 
@@ -19,6 +20,7 @@ class MonorepoRunner implements Runner {
   final int concurrency;
   final bool failFast;
   final bool verbose;
+  final bool fvm;
   final ProcessHandler? _processHandler;
 
   @override
@@ -32,6 +34,7 @@ class MonorepoRunner implements Runner {
       coverage: coverage,
       failFast: failFast,
       verbose: verbose,
+      fvm: fvm,
       processHandler: _processHandler,
     );
 

@@ -81,6 +81,7 @@ elimina a antiga limitação de "saída misturada" entre pacotes.
 - `--package` / `-p`: Modo monorepo
 - `--verbose` / `-v`: Saída detalhada
 - `--fail-fast`: Interrompe no primeiro erro
+- `--fvm`: Executa via `fvm flutter test`
 - `--concurrency N`: Define número de processos paralelos
 - `--no-concurrency`: Desabilita paralelização
 

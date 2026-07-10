@@ -68,6 +68,9 @@ fastest --no-concurrency
 
 # Define a quantidade de núcleos a serem utilizados
 fastest caminho/para/pasta --concurrency=[4]
+
+# Executa via "fvm flutter test" (projetos que usam Flutter Version Management)
+fastest --fvm
 ```
 
 ## Execução Paralela 🔄

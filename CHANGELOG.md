@@ -1,3 +1,8 @@
+## 0.3.0
+
+### Features
+- Adiciona a flag `--fvm` para executar via `fvm flutter test` em projetos que usam o Flutter Version Management
+
 ## 0.2.0
 
 ### Features

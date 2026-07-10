@@ -20,6 +20,7 @@ class TestRunner implements Runner {
     this.concurrency = 1,
     this.failFast = false,
     this.verbose = false,
+    this.fvm = false,
     ProcessHandler? processHandler,
   }) : _processHandler = processHandler ?? const DefaultProcessHandler();
 
@@ -28,6 +29,10 @@ class TestRunner implements Runner {
   final int concurrency;
   final bool failFast;
   final bool verbose;
+
+  /// Executa via `fvm flutter test` em vez de `flutter test`.
+  final bool fvm;
+
   final ProcessHandler _processHandler;
 
   final _testOptimizer = TestOptimizer();
@@ -56,9 +61,13 @@ class TestRunner implements Runner {
       concurrency: concurrency,
     );
 
+    // Com `--fvm`, executa `fvm flutter test`; caso contrário, `flutter test`.
+    final executable = fvm ? 'fvm' : 'flutter';
+    final commandArgs = fvm ? ['flutter', ...args] : args;
+
     final process = await _processHandler.startProcess(
-      'flutter',
-      args,
+      executable,
+      commandArgs,
       workingDirectory: testPath,
     );
 

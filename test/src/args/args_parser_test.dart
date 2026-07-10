@@ -86,6 +86,16 @@ void main() {
       },
     );
 
+    test('fvm deve ser false por padrão', () async {
+      await parser(['--path', tempDir.path]);
+      expect(parser.fvm, isFalse);
+    });
+
+    test('deve habilitar fvm quando a flag --fvm é fornecida', () async {
+      await parser(['--fvm', '--path', tempDir.path]);
+      expect(parser.fvm, isTrue);
+    });
+
     test('deve configurar concurrency corretamente', () async {
       await parser(['--concurrency', '2', '--path', tempDir.path]);
 

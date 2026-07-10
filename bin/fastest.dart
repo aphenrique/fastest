@@ -23,6 +23,7 @@ void main(List<String> args) async {
       concurrency: parser.concurrency,
       failFast: parser.failFast,
       verbose: parser.verbose,
+      fvm: parser.fvm,
     );
 
     final exitCode = await runner.execute();

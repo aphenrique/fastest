@@ -34,6 +34,9 @@ class ArgsParser {
   /// Número de processos concorrentes para execução dos testes
   late final int concurrency;
 
+  /// Indica se deve executar via `fvm flutter test` (Flutter Version Management)
+  late final bool fvm;
+
   /// Caminho onde os testes serão executados
   late final String testPath;
 
@@ -52,6 +55,7 @@ class ArgsParser {
     isPackage = results['package'] as bool;
     autoConfirm = results['yes'] as bool;
     failFast = results['fail-fast'] as bool;
+    fvm = results['fvm'] as bool;
     verbose = results['verbose'] as bool || !isPackage;
     concurrency = results['no-concurrency'] as bool
         ? 1
@@ -108,6 +112,11 @@ class ArgsParser {
       'fail-fast',
       negatable: false,
       help: 'Interrompe a execução ao primeiro teste que falhar',
+    )
+    ..addFlag(
+      'fvm',
+      negatable: false,
+      help: 'Executa via "fvm flutter test" (para projetos que usam fvm)',
     )
     ..addFlag(
       'verbose',
