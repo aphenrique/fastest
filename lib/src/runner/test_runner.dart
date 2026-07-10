@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:path/path.dart' as path;
 
 import '../coverage_check/coverage_handler.dart';
+import '../domain/result_parser.dart';
+import '../domain/test_result.dart';
 import '../optimizer/test_optimizer.dart';
+import '../presentation/result_reporter.dart';
 import '../process/process_handler.dart';
-import '../view/test_output.dart';
 import 'runner.dart';
 import 'test_arguments_builder.dart';
 
-/// Executor de testes Flutter que gerencia o processo de execução dos testes
+/// Executor de testes Flutter que gerencia o processo de execução dos testes.
 class TestRunner implements Runner {
   /// Cria uma nova instância de TestRunner
   TestRunner({
@@ -17,9 +21,7 @@ class TestRunner implements Runner {
     this.failFast = false,
     this.verbose = false,
     ProcessHandler? processHandler,
-    TestOutput? testOutput,
-  })  : _processHandler = processHandler ?? const DefaultProcessHandler(),
-        _testOutput = testOutput;
+  }) : _processHandler = processHandler ?? const DefaultProcessHandler();
 
   final String testPath;
   final bool coverage;
@@ -27,7 +29,6 @@ class TestRunner implements Runner {
   final bool failFast;
   final bool verbose;
   final ProcessHandler _processHandler;
-  final TestOutput? _testOutput;
 
   final _testOptimizer = TestOptimizer();
   final _coverageHandler = CoverageHandler();
@@ -35,14 +36,16 @@ class TestRunner implements Runner {
 
   String get packageName => path.basename(testPath);
 
-  @override
-  Future<int> execute() async {
-    final testOutput = _testOutput ??
-        TestOutput(
-          verbose,
-          packageName: packageName,
-          failFast: failFast,
-        );
+  /// Executa os testes de forma "silenciosa" e devolve um [PackageResult].
+  ///
+  /// A saída do `flutter test` é interpretada pelo [ResultParser] (camada de
+  /// domínio); nada é renderizado aqui, o que permite rodar dentro de isolates
+  /// e agregar os resultados na camada de apresentação.
+  ///
+  /// Quando [echo] é `true`, a saída bruta também é ecoada em tempo real
+  /// (usado no modo single-package).
+  Future<PackageResult> run({bool echo = false}) async {
+    final stopwatch = Stopwatch()..start();
 
     _coverageHandler.verifyCoverage(testPath, coverage);
 
@@ -59,10 +62,29 @@ class TestRunner implements Runner {
       workingDirectory: testPath,
     );
 
-    return _processHandler.handleProcessOutput(
-      process,
-      testOutput.output,
-      testOutput.error,
-    );
+    final parser = ResultParser(packageName: packageName);
+    const decoder = SystemEncoding();
+
+    final stdoutDone = process.stdout.transform(decoder.decoder).forEach((c) {
+      parser.addStdout(c);
+      if (echo) stdout.write(c);
+    });
+    final stderrDone = process.stderr.transform(decoder.decoder).forEach((c) {
+      parser.addStderr(c);
+      if (echo) stderr.write(c);
+    });
+
+    await Future.wait([stdoutDone, stderrDone]);
+    final exitCode = await process.exitCode;
+    stopwatch.stop();
+
+    return parser.build(exitCode: exitCode, duration: stopwatch.elapsed);
+  }
+
+  @override
+  Future<int> execute() async {
+    final result = await run(echo: verbose);
+    const ResultReporter().reportSingle(result);
+    return result.success ? 0 : (result.exitCode == 0 ? 1 : result.exitCode);
   }
 }

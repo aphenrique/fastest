@@ -1,10 +1,9 @@
 import '../process/process_handler.dart';
-import '../view/loading_indicator.dart';
 import 'executor/monorepo_executor.dart';
 import 'package/package_finder.dart';
 import 'runner.dart';
 
-/// Runner responsável por executar testes em um ambiente monorepo
+/// Runner responsável por executar testes em um ambiente monorepo.
 class MonorepoRunner implements Runner {
   MonorepoRunner({
     required this.rootPath,
@@ -36,13 +35,6 @@ class MonorepoRunner implements Runner {
       processHandler: _processHandler,
     );
 
-    final loading = LoadingIndicator()
-    ..start();
-
-    try {
-      return await executor.execute();
-    } finally {
-      loading.stop();
-    }
+    return executor.execute();
   }
 }

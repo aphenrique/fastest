@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:fastest/src/args/args_parser.dart';
 import 'package:fastest/src/coverage_check/coverage_check.dart';
+import 'package:fastest/src/presentation/colored_output.dart';
+import 'package:fastest/src/presentation/console_color.dart';
 import 'package:fastest/src/runner/runner.dart';
-import 'package:fastest/src/view/colored_output.dart';
-import 'package:fastest/src/view/console_color.dart';
 
 void main(List<String> args) async {
   final parser = ArgsParser();

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:path/path.dart' as path;
 
-import '../view/colored_output.dart';
-import '../view/console_color.dart';
+import '../presentation/colored_output.dart';
+import '../presentation/console_color.dart';
 
 /// Parser de argumentos de linha de comando para o Fastest.
 ///

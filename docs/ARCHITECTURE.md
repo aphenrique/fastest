@@ -14,17 +14,23 @@ A segunda premissa é a **execução paralela de testes de diferentes pacotes** 
 
 ## Estrutura de Diretórios
 
+A organização é **modular por responsabilidade**, com uma separação explícita
+entre **domínio** (lógica pura), **execução/infra** (processos, I/O) e
+**apresentação** (renderização no terminal):
+
 ```
 lib/
 ├── fastest.dart                    # Ponto de entrada da biblioteca
 └── src/
+    ├── domain/                     # Modelos puros e parsing (sem I/O de UI)
+    │   ├── test_result.dart        # PackageResult, TestFailure
+    │   └── result_parser.dart      # Interpreta a saída do `flutter test`
     ├── args/                       # Processamento de argumentos CLI
     │   └── args_parser.dart
     ├── coverage_check/             # Verificação e geração de cobertura
     │   ├── coverage_check.dart
     │   └── coverage_handler.dart
     ├── optimizer/                  # Otimização e agregação de testes
-    │   ├── test_finder.dart
     │   ├── test_optimizer.dart
     │   └── alias_generator.dart
     ├── process/                    # Gerenciamento de processos
@@ -33,19 +39,34 @@ lib/
     │   ├── runner.dart
     │   ├── test_runner.dart
     │   ├── monorepo_runner.dart
-    │   ├── process_runner.dart
     │   ├── test_arguments_builder.dart
     │   ├── executor/
     │   │   └── monorepo_executor.dart
     │   └── package/
     │       ├── package_finder.dart
     │       └── monorepo_package.dart
-    └── view/                       # Interface e saída visual
+    └── presentation/               # Toda a renderização no terminal
         ├── colored_output.dart
         ├── console_color.dart
-        ├── loading_indicator.dart
-        └── test_output.dart
+        └── result_reporter.dart    # Progresso, tabela e lista de falhas
 ```
+
+### Fluxo de dados entre camadas
+
+```
+runner (executa flutter test)
+   │  stream de saída
+   ▼
+domain/ResultParser  ──►  domain/PackageResult   (objeto puro, serializável)
+                                   │
+                                   ▼
+                      presentation/ResultReporter  (tabela + progresso + falhas)
+```
+
+O `PackageResult` é um objeto puro e **serializável por isolate**: cada pacote
+do monorepo roda em seu próprio isolate, calcula o resultado em silêncio e o
+devolve; a camada de apresentação agrega tudo e renderiza no final — o que
+elimina a antiga limitação de "saída misturada" entre pacotes.
 
 ## Componentes Principais
 
@@ -91,7 +112,7 @@ Runner (interface)
 **TestRunner**:
 - Executa testes em um único pacote
 - Usa `TestOptimizer` para agregar testes
-- Gerencia saída via `TestOutput`
+- Produz um `PackageResult` (via `ResultParser`); a renderização fica a cargo do `ResultReporter`
 
 **MonorepoRunner**:
 - Detecta múltiplos pacotes via `PackageFinder`
@@ -116,41 +137,35 @@ Runner (interface)
 - Isolamento de dependências do sistema
 - Facilita tratamento de streams de saída
 
-### 5. View (`view/`)
-**Responsabilidade**: Gerenciar toda a saída visual para o usuário.
+### 5. Domain (`domain/`)
+**Responsabilidade**: Modelar o resultado da execução e interpretar a saída
+bruta do `flutter test`, sem qualquer dependência de I/O de apresentação.
+
+**Componentes**:
+- `PackageResult` / `TestFailure`: modelos puros e serializáveis por isolate
+- `ResultParser`: acumula linhas de stdout/stderr e produz um `PackageResult`
+  (nome, sucesso, exitCode, duração, falhas por arquivo). Centraliza a lógica
+  de parsing que antes vivia espalhada na camada de saída.
+
+### 6. Presentation (`presentation/`)
+**Responsabilidade**: Concentrar **toda** a renderização visual no terminal.
 
 **Componentes**:
 
-#### `ColoredOutput`
-- Utilitário para saída colorida no terminal
-- Suporta cores ANSI padrão
+#### `ColoredOutput` / `ConsoleColor`
+- Utilitário e enum de cores ANSI para saída no terminal.
 
-#### `ConsoleColor`
-- Enum com cores disponíveis (red, green, yellow, cyan, etc.)
+#### `ResultReporter`
+Renderiza os resultados a partir de `PackageResult`:
+- **Contador de progresso**: `[03/08] ✓ pacote (1.2s)` conforme cada pacote conclui
+- **Tabela por pacote**: status, nº de falhas e duração (falhas primeiro)
+- **Lista de falhas**: agrupada por pacote e por arquivo de teste
+- **Resumo single-package**: status + falhas do pacote único
 
-#### `LoadingIndicator`
-- Animação de spinner durante execução
-- Usa caracteres Braille para animação suave
-- Atualização a cada 100ms
+> A execução (`TestRunner`) apenas **produz** `PackageResult`; a apresentação
+> decide **como** exibir. Isso mantém a lógica desacoplada da saída.
 
-#### `TestOutput` (Strategy Pattern)
-- Interface para processamento de saída de testes
-- Duas implementações:
-  - **VerboseModeTestOutput**: Exibe tudo em tempo real
-  - **StandardModeTestOutput**: Acumula e exibe ao final
-
-**StandardModeTestOutput**:
-- Acumula saídas durante execução
-- Filtra warnings repetidos
-- Exibe resumo consolidado ao final
-- Formato: `[XX/YY] package_name > mensagem`
-
-**VerboseModeTestOutput**:
-- Streaming em tempo real
-- Útil para debugging
-- Sempre ativo em modo single-package
-
-### 6. Coverage (`coverage_check/`)
+### 7. Coverage (`coverage_check/`)
 **Responsabilidade**: Gerenciar cobertura de código.
 
 **Componentes**:
@@ -179,7 +194,9 @@ TestOptimizer() → gera .test_optimizer.dart
   ↓
 Process.start('flutter', ['test', ...])
   ↓
-TestOutput.output/error() → processa streams
+ResultParser → PackageResult (domínio)
+  ↓
+ResultReporter.reportSingle() → renderiza status + falhas
   ↓
 exit(exitCode)
 ```
@@ -204,9 +221,9 @@ MonorepoExecutor.execute()
 │ Isolate N: TestRunner(pkgN)    │
 └─────────────────────────────────┘
   ↓
-Aguarda conclusão (respeitando concurrency)
+Cada isolate devolve um PackageResult (silencioso)
   ↓
-Coleta resultados
+ResultReporter: progresso [i/n] → tabela → lista de falhas
   ↓
 exit(hasFailures ? 1 : 0)
 ```
@@ -215,11 +232,13 @@ exit(hasFailures ? 1 : 0)
 
 ### 1. Factory Pattern
 - `Runner.factory()`: Cria `TestRunner` ou `MonorepoRunner` baseado em flags
-- `TestOutput.factory()`: Cria modo verbose ou standard
 
 ### 2. Strategy Pattern
-- `TestOutput`: Diferentes estratégias de exibição (verbose vs standard)
 - `ProcessHandler`: Permite diferentes implementações de execução
+
+### 2.1. Separação Parser/Renderer
+- `ResultParser` (domínio) interpreta a saída → `PackageResult`
+- `ResultReporter` (apresentação) decide como exibir o resultado
 
 ### 3. Template Method
 - `Runner.execute()`: Define contrato para execução
@@ -275,12 +294,12 @@ while (queue.isNotEmpty || running.isNotEmpty) {
 - Configurável via `--concurrency`
 
 ### 3. Filtragem de Saída
-- Remove warnings repetidos (ex: file_picker platform warnings)
-- Exibe apenas informações relevantes em modo standard
+- `ResultParser` extrai apenas falhas relevantes (linhas `[E]`) e as agrupa por arquivo
+- Descarta ruído do flutter (ex: "Waiting for another flutter command...")
 
-### 4. Loading Indicator
-- Feedback visual durante execução
-- Não interfere com saída dos testes
+### 4. Contador de Progresso
+- Cada pacote concluído imprime `[i/n] ✓/✗ nome (duração)`
+- Substitui o spinner: dá noção real de quantos pacotes já terminaram
 
 ### 5. Fail-Fast
 - Interrompe execução ao primeiro erro
@@ -293,10 +312,9 @@ while (queue.isNotEmpty || running.isNotEmpty) {
 2. Adicionar lógica no factory de `Runner`
 3. Criar testes unitários
 
-### Adicionando Novos Modos de Saída
-1. Implementar interface `TestOutput`
-2. Adicionar lógica no factory de `TestOutput`
-3. Processar streams `output` e `error`
+### Adicionando Novos Formatos de Saída
+1. Estender/parametrizar `ResultReporter` (camada de apresentação)
+2. Consumir `PackageResult` — sem tocar na lógica de execução/parsing
 
 ### Adicionando Novas Flags
 1. Adicionar flag em `ArgsParser.parser`
@@ -317,28 +335,27 @@ while (queue.isNotEmpty || running.isNotEmpty) {
 
 ### Trade-offs
 - **Agregação**: Mais rápido, mas falhas são menos granulares
-- **Paralelização**: Mais rápido, mas saída pode ser confusa
+- **Paralelização**: Mais rápido; a saída é agregada por pacote ao final (não se mistura)
 - **Verbose mode**: Mais informação, mas mais poluição visual
 
 ## Testabilidade
 
 ### Estratégias Implementadas
-1. **Dependency Injection**: `ProcessHandler` injetável
-2. **Interfaces**: Contratos claros (`Runner`, `TestOutput`)
+1. **Dependency Injection**: `ProcessHandler` e `ResultReporter` injetáveis
+2. **Domínio puro**: `ResultParser` testável sem I/O (ver `result_parser_test.dart`)
 3. **Isolamento**: Lógica separada em módulos pequenos
 
 ### Cobertura de Testes
 - `args_parser_test.dart`: Validação de argumentos
+- `result_parser_test.dart`: Parsing da saída → `PackageResult`
 - `test_runner_test.dart`: Lógica de execução
-- `process_runner_test.dart`: Gerenciamento de processos
 - `test_arguments_builder_test.dart`: Construção de argumentos
 
 ## Limitações Conhecidas
 
-1. **Saída Misturada**: Em modo monorepo, saídas de diferentes pacotes podem se intercalar
-2. **Granularidade de Erros**: Agregação dificulta identificar arquivo específico com falha
-3. **Dependência do Flutter**: Requer Flutter instalado e configurado
-4. **Plataforma**: Otimizado para Unix-like systems (cores ANSI)
+1. **Granularidade de Erros**: Agregação dificulta identificar arquivo específico com falha
+2. **Dependência do Flutter**: Requer Flutter instalado e configurado
+3. **Plataforma**: Otimizado para Unix-like systems (cores ANSI)
 
 ## Próximos Passos
 

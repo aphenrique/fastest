@@ -22,4 +22,9 @@ class ColoredOutput {
   static String line(ConsoleColor color, String text, {bool reset = false}) {
     return '${color.ansi}$text${ConsoleColor.reset.ansi}\n';
   }
+
+  /// Retorna o texto colorido (sem quebra de linha), útil para montar células.
+  static String wrap(ConsoleColor color, String text) {
+    return '${color.ansi}$text${ConsoleColor.reset.ansi}';
+  }
 }

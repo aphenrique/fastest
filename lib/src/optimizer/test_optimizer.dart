@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
-import '../view/colored_output.dart';
-import '../view/console_color.dart';
+import '../presentation/colored_output.dart';
+import '../presentation/console_color.dart';
 import 'alias_generator.dart';
 
 class TestOptimizer {
